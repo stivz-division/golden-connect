@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+# ===================================================================
+# MySQL Database Backup Script — Golden Connect
+# ===================================================================
+# Creates timestamped, compressed backups with retention policy.
+#
+# Usage: ./deploy/scripts/backup.sh
+# ===================================================================
+
+set -euo pipefail
+
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+COMPOSE_FILE="${PROJECT_ROOT}/compose.yml"
+COMPOSE_PROD="${PROJECT_ROOT}/compose.production.yml"
+dc() { docker compose -f "${COMPOSE_FILE}" -f "${COMPOSE_PROD}" "$@"; }
+BACKUP_DIR="${PROJECT_ROOT}/backups"
+
+log_info()    { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
+log_error()   { echo -e "${RED}[ERROR]${NC} $1"; }
+error_exit()  { log_error "$1"; exit 1; }
+
+[ -f "${PROJECT_ROOT}/.env" ] && source "${PROJECT_ROOT}/.env" 2>/dev/null
+
+DB_USER="${DB_USERNAME:-root}"
+DB_NAME="${DB_DATABASE:-golden_connect}"
+DB_PASS="${DB_PASSWORD:-}"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+BACKUP_FILE="${BACKUP_DIR}/${DB_NAME}-${TIMESTAMP}.sql"
+
+mkdir -p "${BACKUP_DIR}"
+
+log_info "Backing up database: ${DB_NAME}"
+
+dc ps --format '{{.State}}' db 2>/dev/null | grep -q "running" || error_exit "Database container is not running"
+
+dc exec -T db mysqldump \
+    -u "${DB_USER}" \
+    -p"${DB_PASS}" \
+    --single-transaction \
+    --routines \
+    --triggers \
+    "${DB_NAME}" \
+    > "${BACKUP_FILE}" || error_exit "Backup failed"
+
+if [ ! -s "${BACKUP_FILE}" ]; then
+    rm -f "${BACKUP_FILE}"
+    error_exit "Backup file is empty"
+fi
+
+gzip -f "${BACKUP_FILE}" || error_exit "Compression failed"
+COMPRESSED="${BACKUP_FILE}.gz"
+SIZE=$(du -h "${COMPRESSED}" | cut -f1)
+
+log_success "Backup created: ${COMPRESSED} (${SIZE})"
+
+# Retention: 7 daily, 4 weekly, 12 monthly
+log_info "Applying retention policy..."
+find "${BACKUP_DIR}" -name "*.sql.gz" -mtime +7 | sort | while read -r file; do
+    FILENAME=$(basename "$file")
+    FILEDATE=$(echo "$FILENAME" | grep -oE '[0-9]{8}' | head -1)
+    [ -z "$FILEDATE" ] && continue
+
+    DAY="${FILEDATE:6:2}"
+    AGE_DAYS=$(( ( $(date +%s) - $(date -j -f "%Y%m%d" "$FILEDATE" +%s 2>/dev/null || date -d "${FILEDATE:0:4}-${FILEDATE:4:2}-${FILEDATE:6:2}" +%s 2>/dev/null || echo 0) ) / 86400 ))
+
+    if [ "$DAY" = "01" ] && [ "$AGE_DAYS" -le 365 ]; then
+        continue
+    fi
+
+    DOW=$(date -j -f "%Y%m%d" "$FILEDATE" +%w 2>/dev/null || date -d "${FILEDATE:0:4}-${FILEDATE:4:2}-${FILEDATE:6:2}" +%w 2>/dev/null || echo "")
+    if [ "$DOW" = "0" ] && [ "$AGE_DAYS" -le 30 ]; then
+        continue
+    fi
+
+    rm -f "$file"
+done
+log_info "Retention policy applied"
+
+echo ""
+log_info "Recent backups:"
+ls -lh "${BACKUP_DIR}"/*.sql.gz 2>/dev/null | tail -5 || echo "  None"
+
+log_success "Backup complete"

@@ -1,0 +1,64 @@
+# Version control
+.git
+.gitignore
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Docker (prevent recursive copy)
+Dockerfile*
+docker-compose*
+compose*
+.dockerignore
+
+# Dependencies (rebuilt in container)
+node_modules
+vendor
+__pycache__
+
+# Environment files (secrets)
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+public/build
+public/hot
+coverage
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+docs/
+AGENTS.md
+
+# Storage (not needed in build)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# AI Factory
+.ai-factory
+.claude
+
+# Tests (optional)
+# tests/
+
+# Deploy scripts
+deploy/
+
+# Backups
+backups/
