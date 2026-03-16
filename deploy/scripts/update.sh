@@ -58,9 +58,16 @@ if [ -d ".git" ]; then
     fi
 fi
 
-log_info "Building new image (version: ${NEW_VERSION})..."
-dc build --no-cache app || error_exit "Build failed"
-log_success "Image built"
+# Build or pull image
+if [ -n "${DOCKER_IMAGE:-}" ]; then
+    log_info "Pulling image from registry (version: ${NEW_VERSION})..."
+    dc pull app nginx || error_exit "Pull failed"
+    log_success "Images pulled"
+else
+    log_info "Building new image (version: ${NEW_VERSION})..."
+    dc build --no-cache app nginx || error_exit "Build failed"
+    log_success "Images built"
+fi
 
 # Migrations
 log_info "Running migrations..."

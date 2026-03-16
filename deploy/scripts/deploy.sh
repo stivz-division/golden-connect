@@ -65,9 +65,16 @@ cd "${PROJECT_ROOT}"
 VERSION="${VERSION:-$(git describe --tags --always --dirty 2>/dev/null || date +%Y%m%d-%H%M%S)}"
 export VERSION
 
-log_info "Building application image (version: ${VERSION})..."
-dc build || error_exit "Build failed"
-log_success "Image built successfully"
+# Build or pull images
+if [ -n "${DOCKER_IMAGE:-}" ]; then
+    log_info "Pulling images from registry (version: ${VERSION})..."
+    dc pull app nginx || error_exit "Pull failed"
+    log_success "Images pulled successfully"
+else
+    log_info "Building application image (version: ${VERSION})..."
+    dc build || error_exit "Build failed"
+    log_success "Images built successfully"
+fi
 
 # ===================================================================
 # Start Infrastructure
