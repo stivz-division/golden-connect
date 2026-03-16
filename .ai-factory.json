@@ -28,13 +28,6 @@
         "aif-skill-generator",
         "aif-verify"
       ],
-      "mcp": {
-        "github": false,
-        "filesystem": false,
-        "postgres": false,
-        "chromeDevtools": false,
-        "playwright": false
-      },
       "managedSkills": {
         "aif": {
           "sourceHash": "5161e4dbaab409be64099fd0d55b06670fc7136fce63e9781eb9d21ee608b6ac",
@@ -124,6 +117,13 @@
           "sourceHash": "9e2db875022e95af6a4f68c44093457c8d7d19689a9512340bb1b9cae9a77cd4",
           "installedHash": "f6250194e7aa364c53c6ab0a686a15016bc10fcafb21692038332463e8cfafe1"
         }
+      },
+      "mcp": {
+        "github": false,
+        "filesystem": false,
+        "postgres": false,
+        "chromeDevtools": false,
+        "playwright": false
       }
     }
   ],
