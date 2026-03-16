@@ -9,6 +9,12 @@ services:
     build:
       context: .
       target: production
+      args:
+        VITE_APP_NAME: ${APP_NAME:-GoldenConnect}
+        VITE_REVERB_APP_KEY: ${REVERB_APP_KEY:-golden-connect-key}
+        VITE_REVERB_HOST: ${VITE_REVERB_HOST:-localhost}
+        VITE_REVERB_PORT: ${HTTP_PORT:-80}
+        VITE_REVERB_SCHEME: ${REVERB_SCHEME:-http}
     env_file: .env
     environment:
       DB_HOST: db
@@ -63,7 +69,15 @@ services:
       - backend
 
   nginx:
-    image: nginx:1.27-alpine
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      args:
+        VITE_APP_NAME: ${APP_NAME:-GoldenConnect}
+        VITE_REVERB_APP_KEY: ${REVERB_APP_KEY:-golden-connect-key}
+        VITE_REVERB_HOST: ${VITE_REVERB_HOST:-localhost}
+        VITE_REVERB_PORT: ${HTTP_PORT:-80}
+        VITE_REVERB_SCHEME: ${REVERB_SCHEME:-http}
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
     ports:
@@ -72,7 +86,7 @@ services:
       app:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "wget --spider -q http://127.0.0.1/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -113,6 +127,8 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     command: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      disable: true
     depends_on:
       app:
         condition: service_healthy
@@ -134,11 +150,11 @@ services:
       app:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:8080 || exit 1"]
+      test: ["CMD", "php", "-r", "@fsockopen('localhost', 8080) or exit(1);"]
       interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 30s
     networks:
       - frontend
       - backend

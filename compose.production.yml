@@ -1,5 +1,6 @@
 # compose.production.yml — Production hardening
-# Usage: docker compose -f compose.yml -f compose.production.yml up -d
+# Local test: docker compose -f compose.yml -f compose.production.yml up -d
+# Real prod: set DOCKER_REGISTRY/DOCKER_IMAGE in .env and use prebuilt images
 
 x-logging: &default-logging
   driver: "json-file"
@@ -16,8 +17,11 @@ x-security: &default-security
 
 services:
   app:
-    image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION:-latest}
+    build:
+      context: .
+      target: production
     <<: *default-security
+    read_only: false
     user: "1001:1001"
     tmpfs:
       - /tmp:noexec,nosuid,size=100m
@@ -34,8 +38,11 @@ services:
     restart: unless-stopped
 
   horizon:
-    image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION:-latest}
+    build:
+      context: .
+      target: production
     <<: *default-security
+    read_only: false
     user: "1001:1001"
     tmpfs:
       - /tmp:noexec,nosuid,size=100m
@@ -52,8 +59,11 @@ services:
     restart: unless-stopped
 
   scheduler:
-    image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION:-latest}
+    build:
+      context: .
+      target: production
     <<: *default-security
+    read_only: false
     user: "1001:1001"
     tmpfs:
       - /tmp:noexec,nosuid,size=50m
@@ -70,8 +80,11 @@ services:
     restart: unless-stopped
 
   reverb:
-    image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION:-latest}
+    build:
+      context: .
+      target: production
     <<: *default-security
+    read_only: false
     user: "1001:1001"
     tmpfs:
       - /tmp:noexec,nosuid,size=50m
@@ -109,6 +122,12 @@ services:
 
   redis:
     <<: *default-security
+    read_only: false
+    cap_add:
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+      - CHOWN
     tmpfs:
       - /tmp:noexec,nosuid,size=50m
     deploy:
@@ -126,6 +145,9 @@ services:
     <<: *default-security
     cap_add:
       - NET_BIND_SERVICE
+      - CHOWN
+      - SETGID
+      - SETUID
     tmpfs:
       - /tmp:noexec,nosuid,size=50m
       - /var/cache/nginx:noexec,nosuid,size=50m

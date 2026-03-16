@@ -7,8 +7,8 @@ services:
       target: development
     volumes:
       - .:/app
-      - /app/vendor
-      - /app/node_modules
+      - vendor_data:/app/vendor
+      - node_modules_data:/app/node_modules
     ports:
       - "${APP_PORT:-8000}:8000"
       - "9003:9003"                       # Xdebug port
@@ -18,29 +18,41 @@ services:
       LOG_LEVEL: debug
       XDEBUG_MODE: develop,debug
     command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'file_get_contents(\"http://localhost:8000\");' 2>/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 180s
 
   horizon:
     build:
       target: development
     volumes:
       - .:/app
-      - /app/vendor
+      - vendor_data:/app/vendor
+    environment:
+      INSTALL_NODE_DEPS: "false"
 
   scheduler:
     build:
       target: development
     volumes:
       - .:/app
-      - /app/vendor
+      - vendor_data:/app/vendor
+    environment:
+      INSTALL_NODE_DEPS: "false"
 
   reverb:
     build:
       target: development
     volumes:
       - .:/app
-      - /app/vendor
+      - vendor_data:/app/vendor
     ports:
       - "${REVERB_PORT:-8080}:8080"
+    environment:
+      INSTALL_NODE_DEPS: "false"
 
   db:
     ports:
@@ -56,6 +68,25 @@ services:
 
   # --- Dev-only services ---
 
+  vite:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/app
+      - node_modules_data:/app/node_modules
+    ports:
+      - "5173:5173"
+    command: ["npx", "vite", "--host"]
+    environment:
+      INSTALL_NODE_DEPS: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:5173 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
   mailpit:
     image: axllent/mailpit:latest
     ports:
@@ -70,3 +101,7 @@ services:
     networks:
       - backend
     profiles: [dev]
+
+volumes:
+  vendor_data:
+  node_modules_data:
