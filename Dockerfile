@@ -51,6 +51,7 @@ RUN apk add --no-cache \
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 RUN echo "opcache.jit=disable" >> /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/dev-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/dev-entrypoint.sh
 
 WORKDIR /app
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -82,6 +83,7 @@ COPY --from=vendor --chown=appuser:appuser /app/vendor ./vendor
 COPY --chown=appuser:appuser . .
 COPY --from=node-builder --chown=appuser:appuser /app/public/build ./public/build
 COPY docker/php/prod-entrypoint.sh /usr/local/bin/prod-entrypoint.sh
+RUN chmod +x /usr/local/bin/prod-entrypoint.sh
 
 RUN rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
 

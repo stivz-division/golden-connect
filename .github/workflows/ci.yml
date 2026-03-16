@@ -208,7 +208,7 @@ jobs:
 
             docker compose -f compose.yml -f compose.production.yml pull app nginx
 
-            docker compose -f compose.yml -f compose.production.yml run --rm app php artisan migrate --force
+            docker compose -f compose.yml -f compose.production.yml run --rm --entrypoint="" app php artisan migrate --force
 
             docker compose -f compose.yml -f compose.production.yml up -d --force-recreate --no-deps app nginx horizon scheduler reverb
 
