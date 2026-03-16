@@ -94,3 +94,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 
 ENTRYPOINT ["prod-entrypoint.sh"]
 CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8000"]
+
+# --- Nginx ---
+FROM nginx:1.27-alpine AS nginx
+
+COPY --from=node-builder /app/public/build /app/public/build

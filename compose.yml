@@ -71,7 +71,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: docker/nginx/Dockerfile
+      target: nginx
       args:
         VITE_APP_NAME: ${APP_NAME:-GoldenConnect}
         VITE_REVERB_APP_KEY: ${REVERB_APP_KEY:-golden-connect-key}
