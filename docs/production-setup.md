@@ -77,151 +77,324 @@ sudo su - deploy
 
 ### 2.3 Настроить SSH-ключ для GitHub Actions
 
-На сервере (под пользователем `deploy`):
+**Зачем это нужно:** GitHub Actions будет подключаться к вашему серверу по SSH, чтобы деплоить код. Для этого нужна пара ключей: публичный ключ кладём на сервер («замок»), приватный ключ кладём в GitHub Secrets («ключ от замка»).
+
+#### Шаг 1 — Создать ключ НА СЕРВЕРЕ
+
+Подключитесь к серверу по SSH под пользователем `deploy`:
 
 ```bash
-# Создать директорию .ssh
+ssh deploy@103.75.127.131
+```
+
+Сгенерируйте SSH-ключ прямо на сервере:
+
+```bash
+# Создать папку для ключей (если ещё нет)
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
+
+# Сгенерировать ключ (просто нажмите Enter на все вопросы)
+ssh-keygen -t ed25519 -f ~/.ssh/github-actions -C "github-actions-deploy" -N ""
 ```
 
-На вашем локальном компьютере:
+После этого появятся два файла:
+- `~/.ssh/github-actions` — **приватный** ключ (секретный, пойдёт в GitHub)
+- `~/.ssh/github-actions.pub` — **публичный** ключ (останется на сервере)
+
+#### Шаг 2 — Разрешить вход по этому ключу НА СЕРВЕРЕ
+
+Всё ещё на сервере — добавьте публичный ключ в список разрешённых:
 
 ```bash
-# Сгенерировать отдельный ключ для деплоя
-ssh-keygen -t ed25519 -f ~/.ssh/golden-connect-deploy -C "github-actions-deploy" -N ""
-
-# Скопировать публичный ключ на сервер
-ssh-copy-id -i ~/.ssh/golden-connect-deploy.pub deploy@ВАШ_СЕРВЕР
+cat ~/.ssh/github-actions.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
 ```
 
-Сохраните содержимое **приватного ключа** — он понадобится в GitHub Secrets:
+Теперь сервер будет принимать SSH-подключения с этим ключом.
+
+#### Шаг 3 — Скопировать ПРИВАТНЫЙ ключ для GitHub
+
+Всё ещё на сервере — выведите приватный ключ на экран:
 
 ```bash
-cat ~/.ssh/golden-connect-deploy
+cat ~/.ssh/github-actions
 ```
+
+Вы увидите что-то вроде:
+
+```
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAE...
+...много строк...
+-----END OPENSSH PRIVATE KEY-----
+```
+
+**Скопируйте ВСЁ целиком** (включая строки `-----BEGIN...` и `-----END...`).
+
+#### Шаг 4 — Добавить ключ в GitHub Secrets
+
+1. Откройте репозиторий на GitHub в браузере
+2. **Settings** → **Secrets and variables** → **Actions**
+3. Нажмите **New repository secret**
+4. Name: `SERVER_SSH_KEY`
+5. Secret: **вставьте скопированный приватный ключ**
+6. Нажмите **Add secret**
+
+Готово! Теперь GitHub Actions сможет подключаться к серверу.
+
+> **Важно:** Приватный ключ — это как пароль. Никогда не публикуйте его, не отправляйте в чат и не коммитьте в git.
 
 ### 2.4 Настроить Firewall
 
+**Зачем:** Firewall закрывает все порты кроме нужных. Без него любой сервис на сервере доступен из интернета.
+
+Подключитесь к серверу под **root** или пользователем с `sudo`:
+
 ```bash
-# Разрешить SSH
+ssh root@103.75.127.131
+```
+
+#### Шаг 1 — Разрешить нужные порты
+
+```bash
+# Разрешить SSH (чтобы не потерять доступ!)
 sudo ufw allow 22/tcp
 
-# Разрешить HTTP и HTTPS
+# Разрешить HTTP (сайт)
 sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
 
-# Включить firewall
+# Разрешить HTTPS (сайт с SSL)
+sudo ufw allow 443/tcp
+```
+
+#### Шаг 2 — Включить firewall
+
+```bash
 sudo ufw enable
+```
+
+Он спросит `Command may disrupt existing SSH connections. Proceed with operation (y|n)?` — нажмите `y`.
+
+#### Шаг 3 — Проверить
+
+```bash
+sudo ufw status
+```
+
+Должно показать:
+
+```
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW       Anywhere
+80/tcp                     ALLOW       Anywhere
+443/tcp                    ALLOW       Anywhere
 ```
 
 ---
 
 ## 3. Клонировать проект на сервер
 
-Под пользователем `deploy`:
+### 3.1 Склонировать репозиторий
+
+Подключитесь к серверу под пользователем `deploy`:
+
+```bash
+ssh deploy@103.75.127.131
+```
+
+Склонируйте проект:
 
 ```bash
 cd /home/deploy
 
-# Клонировать репозиторий
+# Замените URL на ваш репозиторий
 git clone https://github.com/ВАШ_АККАУНТ/golden-connect.git
 cd golden-connect
 ```
 
-### 3.1 Настроить .env
+> Если репозиторий приватный, GitHub спросит логин и пароль. В качестве пароля используйте **Personal Access Token** (как его создать — описано в шаге 3.3).
+
+### 3.2 Настроить .env
+
+#### Шаг 1 — Скопировать шаблон
 
 ```bash
 cp .env.example .env
 ```
 
-Отредактировать `.env` — установить production-значения:
+#### Шаг 2 — Открыть файл в редакторе
+
+```bash
+nano .env
+```
+
+> В `nano`: редактируйте текст стрелками, сохранить — `Ctrl+O` → `Enter`, выйти — `Ctrl+X`.
+
+#### Шаг 3 — Заполнить значения
+
+Найдите и замените следующие строки (остальное оставьте как есть):
 
 ```dotenv
-# === Application ===
+# === Обязательно заменить ===
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://ваш-домен.com
+APP_URL=http://103.75.127.131            # ваш IP или домен
 LOG_LEVEL=warning
 
-# === Database ===
-DB_PASSWORD=НАДЁЖНЫЙ_ПАРОЛЬ_ЗДЕСЬ
-DB_ROOT_PASSWORD=НАДЁЖНЫЙ_ROOT_ПАРОЛЬ_ЗДЕСЬ
+DB_PASSWORD=Придумайте_сложный_пароль_1   # пароль пользователя БД
+DB_ROOT_PASSWORD=Придумайте_сложный_пароль_2  # пароль root БД
 
-# === Docker Registry ===
+# === Если планируете автодеплой через GitHub Actions ===
 DOCKER_REGISTRY=ghcr.io
 DOCKER_IMAGE=ваш-аккаунт/golden-connect
 VERSION=latest
-
-# === Redis ===
-REDIS_PASSWORD=НАДЁЖНЫЙ_ПАРОЛЬ_REDIS
-
-# === Reverb ===
-REVERB_APP_SECRET=СЛУЧАЙНАЯ_СТРОКА_32_СИМВОЛА
-
-# === Mail (production SMTP) ===
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.ваш-провайдер.com
-MAIL_PORT=587
-MAIL_USERNAME=ваш-email
-MAIL_PASSWORD=ваш-пароль
 ```
 
-### 3.2 Авторизовать Docker в GHCR
+> **Как придумать пароль:** на сервере выполните `openssl rand -base64 24` — получите случайную строку. Сделайте это дважды для двух паролей.
 
-На сервере нужно авторизовать Docker для скачивания образов из GitHub Container Registry:
+#### Шаг 4 — Сгенерировать APP_KEY
 
 ```bash
-# Создайте Personal Access Token на GitHub:
-#   Settings → Developer settings → Personal access tokens → Tokens (classic)
-#   Scope: read:packages
-
-echo "ВАШ_GITHUB_TOKEN" | docker login ghcr.io -u ВАШ_GITHUB_USERNAME --password-stdin
+# APP_KEY сгенерируется автоматически при первом деплое,
+# но можно сделать это вручную:
+php artisan key:generate 2>/dev/null || echo "Ключ сгенерируется при деплое"
 ```
 
-### 3.3 Первичный деплой
+### 3.3 Авторизовать Docker в GHCR
+
+**Зачем:** Если вы будете использовать GitHub Actions для автодеплоя, Docker на сервере должен уметь скачивать собранные образы из GitHub Container Registry (GHCR).
+
+> **Если вы НЕ планируете автодеплой через GitHub Actions** (а будете делать `git pull` + `make deploy` вручную) — **пропустите этот шаг**.
+
+#### Шаг 1 — Создать Personal Access Token на GitHub
+
+1. Откройте GitHub в браузере
+2. Нажмите на свою аватарку (правый верхний угол) → **Settings**
+3. Прокрутите вниз в левом меню → **Developer settings**
+4. **Personal access tokens** → **Tokens (classic)** → **Generate new token (classic)**
+5. Note: `golden-connect-server`
+6. Expiration: выберите срок (или **No expiration** для бессрочного)
+7. Поставьте галочку на **read:packages**
+8. Нажмите **Generate token**
+9. **Скопируйте токен** (он показывается только один раз!)
+
+#### Шаг 2 — Авторизовать Docker на сервере
+
+На сервере (под пользователем `deploy`):
 
 ```bash
-# Выполнить первый деплой
+# Замените ВАШ_ТОКЕН и ВАШ_ЛОГИН на реальные значения
+echo "ВАШ_ТОКЕН" | docker login ghcr.io -u ВАШ_ЛОГИН_GITHUB --password-stdin
+```
+
+Должно появиться: `Login Succeeded`
+
+### 3.4 Первичный деплой
+
+Всё готово! Запускаем:
+
+```bash
+cd /home/deploy/golden-connect
 ./deploy/scripts/deploy.sh
 ```
 
-Скрипт сам соберёт образ, запустит инфраструктуру, выполнит миграции и стартует приложение.
+**Что произойдёт автоматически:**
+1. Проверит что Docker работает и `.env` заполнен
+2. Соберёт Docker-образы (это займёт 5-10 минут в первый раз)
+3. Запустит базу данных (MySQL) и Redis
+4. Подождёт пока они станут healthy
+5. Выполнит миграции базы данных
+6. Запустит все сервисы (app, nginx, horizon, reverb, scheduler)
+7. Проверит что приложение отвечает
+
+В конце увидите:
+
+```
+[SUCCESS] ════════════════════════════════════════════
+[SUCCESS]   Deployment completed successfully!
+[SUCCESS] ════════════════════════════════════════════
+```
+
+Откройте в браузере `http://103.75.127.131` — должен показаться сайт.
+
+> **Если что-то пошло не так:** посмотрите логи — `docker compose -f compose.yml -f compose.production.yml logs --tail=50`
 
 ---
 
-## 4. Настроить GitHub Actions
+## 4. Настроить GitHub Actions (автодеплой)
+
+**Зачем:** Чтобы при каждом пуше в `main` сайт обновлялся автоматически — без захода на сервер.
+
+> Если вы предпочитаете обновлять вручную (`git pull` + `make deploy`) — **пропустите этот раздел**.
 
 ### 4.1 Создать Environment
 
-В репозитории на GitHub:
+**Зачем:** Environment — это «среда» в GitHub. Можно настроить так, чтобы деплой требовал ручного подтверждения (защита от случайного деплоя).
 
-1. **Settings** → **Environments** → **New environment**
-2. Имя: `production`
-3. (Опционально) Включить **Required reviewers** — деплой будет ждать подтверждения
+1. Откройте репозиторий на GitHub в браузере
+2. **Settings** (вкладка сверху) → **Environments** (в левом меню)
+3. Нажмите **New environment**
+4. Введите имя: `production`
+5. Нажмите **Configure environment**
+6. (Необязательно) Поставьте галочку **Required reviewers** и добавьте себя — тогда перед каждым деплоем нужно будет нажать «Approve» в интерфейсе GitHub
+7. Нажмите **Save protection rules**
 
 ### 4.2 Добавить Secrets
 
-**Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+**Зачем:** Secrets — это секретные переменные, которые GitHub Actions использует для подключения к серверу. Они зашифрованы и не видны никому.
 
-| Secret | Значение | Описание |
-|--------|----------|----------|
-| `SERVER_HOST` | `123.456.789.0` | IP-адрес вашего сервера |
-| `SERVER_USER` | `deploy` | Имя пользователя на сервере |
-| `SERVER_SSH_KEY` | `-----BEGIN OPENSSH PRIVATE KEY-----...` | Приватный SSH-ключ (весь файл целиком) |
-| `SERVER_PORT` | `22` | SSH-порт (если отличается от 22) |
-| `SERVER_PROJECT_PATH` | `/home/deploy/golden-connect` | Путь к проекту на сервере |
+1. Откройте репозиторий на GitHub в браузере
+2. **Settings** → **Secrets and variables** → **Actions**
+3. Нажмите **New repository secret**
 
-> `GITHUB_TOKEN` не нужно добавлять — он предоставляется автоматически.
+Добавьте **5 секретов**, по одному:
+
+**Секрет 1:**
+- Name: `SERVER_HOST`
+- Secret: `103.75.127.131`
+- Нажмите **Add secret**
+
+**Секрет 2:**
+- Name: `SERVER_USER`
+- Secret: `deploy`
+- Нажмите **Add secret**
+
+**Секрет 3:**
+- Name: `SERVER_SSH_KEY`
+- Secret: содержимое приватного ключа (из шага 2.3, шаг 3)
+- Нажмите **Add secret**
+
+**Секрет 4:**
+- Name: `SERVER_PORT`
+- Secret: `22`
+- Нажмите **Add secret**
+
+**Секрет 5:**
+- Name: `SERVER_PROJECT_PATH`
+- Secret: `/home/deploy/golden-connect`
+- Нажмите **Add secret**
 
 ### 4.3 Проверить что всё работает
 
+#### Вариант A — через терминал (если установлен `gh` CLI)
+
 ```bash
-# Ручной запуск deploy workflow
 gh workflow run deploy.yml
 ```
 
-Или в GitHub UI: **Actions** → **Deploy** → **Run workflow**
+#### Вариант B — через браузер
+
+1. Откройте репозиторий на GitHub
+2. Вкладка **Actions** (сверху)
+3. В левом меню выберите **Deploy**
+4. Нажмите **Run workflow** → **Run workflow**
+5. Подождите — зелёная галочка = успех, красный крестик = ошибка
+
+Если ошибка — нажмите на workflow run, чтобы увидеть логи и понять что пошло не так.
 
 ---
 
@@ -229,45 +402,113 @@ gh workflow run deploy.yml
 
 ### Автоматический (при push в main)
 
-1. Push в `main` запускает **Lint**, **Tests**, **Build** параллельно
-2. Когда все 3 прошли — запускается **Deploy**
-3. Deploy собирает Docker-образ, пушит в GHCR, заходит на сервер по SSH
-4. На сервере: `git pull` → `docker pull` → миграции → rolling restart
-5. Ждёт health check (60 секунд)
+Вот что происходит, когда вы пушите код в ветку `main`:
 
-### Ручной
+```
+Вы делаете: git push origin main
+         │
+         ▼
+GitHub Actions запускает 3 проверки параллельно:
+  ├── Lint (Pint) — проверка стиля кода
+  ├── Tests (Pest) — запуск тестов
+  └── Build (Vite) — сборка фронтенда
+         │
+         ▼  (все 3 прошли)
+GitHub Actions запускает деплой:
+  1. Подключается к серверу по SSH
+  2. Выполняет git pull (скачивает новый код)
+  3. Собирает Docker-образы
+  4. Запускает миграции
+  5. Перезапускает контейнеры
+  6. Ждёт health check (60 секунд)
+         │
+         ▼
+Сайт обновлён!
+```
 
-Можно запустить деплой вручную из GitHub Actions UI (кнопка "Run workflow"), минуя ожидание тестов.
+### Ручной деплой (без GitHub Actions)
 
-### Откат
-
-Если деплой сломал production:
+Если вы не настраивали GitHub Actions или хотите обновить вручную:
 
 ```bash
-# На сервере
+# Подключиться к серверу
+ssh deploy@103.75.127.131
+
+# Перейти в проект
+cd /home/deploy/golden-connect
+
+# Скачать новый код
+git pull
+
+# Обновить
+./deploy/scripts/update.sh
+```
+
+### Откат (если что-то сломалось)
+
+Если после обновления сайт сломался:
+
+```bash
+ssh deploy@103.75.127.131
 cd /home/deploy/golden-connect
 ./deploy/scripts/rollback.sh
 ```
+
+Это вернёт предыдущую рабочую версию.
 
 ---
 
 ## 6. SSL-сертификат (HTTPS)
 
-### Вариант A: Certbot (Let's Encrypt)
+**Зачем:** Без SSL сайт работает по `http://` — браузер показывает «Не защищено», а пароли пользователей передаются в открытом виде.
+
+### Вариант A: Certbot (Let's Encrypt) — бесплатный сертификат
+
+**Требуется:** доменное имя (например, `golden-connect.com`), направленное на ваш сервер.
+
+#### Шаг 1 — Установить Certbot
 
 ```bash
-# Установить certbot
-sudo apt install certbot
-
-# Получить сертификат (nginx остановить на время получения)
-docker compose -f compose.yml -f compose.production.yml stop nginx
-sudo certbot certonly --standalone -d ваш-домен.com
-docker compose -f compose.yml -f compose.production.yml start nginx
+ssh root@103.75.127.131
+sudo apt install certbot -y
 ```
 
-Добавить в `docker/nginx/conf.d/default.conf`:
+#### Шаг 2 — Остановить Nginx (чтобы освободить порт 80)
+
+```bash
+su - deploy
+cd /home/deploy/golden-connect
+docker compose -f compose.yml -f compose.production.yml stop nginx
+```
+
+#### Шаг 3 — Получить сертификат
+
+```bash
+# Замените ваш-домен.com на ваш реальный домен
+sudo certbot certonly --standalone -d ваш-домен.com
+```
+
+Certbot спросит email — введите свой. Согласитесь с условиями. Если всё хорошо, увидите:
+
+```
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/ваш-домен.com/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/ваш-домен.com/privkey.pem
+```
+
+#### Шаг 4 — Подключить сертификат к Nginx
+
+Отредактируйте файл `docker/nginx/conf.d/default.conf` — добавьте блок для HTTPS **перед** существующим блоком `server`:
 
 ```nginx
+# Редирект HTTP → HTTPS
+server {
+    listen 80;
+    server_name ваш-домен.com;
+    return 301 https://$host$request_uri;
+}
+
+# HTTPS
 server {
     listen 443 ssl;
     server_name ваш-домен.com;
@@ -275,61 +516,125 @@ server {
     ssl_certificate /etc/letsencrypt/live/ваш-домен.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/ваш-домен.com/privkey.pem;
 
-    # ... остальная конфигурация
+    # ... всё остальное из текущего блока server (root, location и т.д.)
 }
 ```
 
-Добавить volume в `compose.yml` для nginx:
+#### Шаг 5 — Подключить папку сертификатов к Docker
+
+В `compose.yml` добавьте volume для nginx:
 
 ```yaml
 nginx:
   volumes:
-    - /etc/letsencrypt:/etc/letsencrypt:ro
+    - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    - /etc/letsencrypt:/etc/letsencrypt:ro    # ← добавить эту строку
 ```
 
-### Вариант B: Cloudflare Proxy
+#### Шаг 6 — Запустить Nginx
 
-1. Добавить домен в Cloudflare
-2. Включить **Proxied** (оранжевое облако) для A-записи
-3. SSL/TLS → **Full (Strict)**
-4. Cloudflare обеспечит HTTPS автоматически
+```bash
+docker compose -f compose.yml -f compose.production.yml up -d nginx
+```
+
+#### Шаг 7 — Обновить APP_URL в .env
+
+```bash
+nano .env
+# Изменить:
+# APP_URL=http://103.75.127.131
+# На:
+# APP_URL=https://ваш-домен.com
+```
+
+Перезапустить app чтобы обновить config cache:
+
+```bash
+docker compose -f compose.yml -f compose.production.yml restart app
+```
+
+> **Автопродление:** Certbot сам обновляет сертификаты через systemd timer. Проверить: `sudo certbot renew --dry-run`
+
+### Вариант B: Cloudflare Proxy (проще, но нужен Cloudflare)
+
+Если ваш домен подключён к Cloudflare:
+
+1. Зайдите в Cloudflare Dashboard → выберите домен
+2. **DNS** → A-запись: `@` → `103.75.127.131` → включите оранжевое облако (**Proxied**)
+3. **SSL/TLS** → выберите режим **Full**
+4. Готово — Cloudflare сам обеспечит HTTPS
+
+Никаких изменений на сервере не нужно. Обновите `APP_URL` в `.env` на `https://ваш-домен.com`.
 
 ---
 
 ## 7. Мониторинг
 
-### Health Check (cron)
+### Health Check — автоматическая проверка что сайт жив
+
+**Зачем:** Если сайт упадёт ночью — вы узнаете из лога, а не от пользователей.
+
+#### Шаг 1 — Открыть crontab
+
+На сервере под пользователем `deploy`:
 
 ```bash
-# Добавить в crontab пользователя deploy
 crontab -e
+```
 
-# Каждые 5 минут проверять здоровье
+Если спросит какой редактор — выберите `1` (nano).
+
+#### Шаг 2 — Добавить строку в конец файла
+
+```
 */5 * * * * /home/deploy/golden-connect/deploy/scripts/health-check.sh >> /home/deploy/health.log 2>&1
 ```
 
-### Backup (cron)
+Это будет проверять здоровье сервисов каждые 5 минут и записывать результат в `/home/deploy/health.log`.
+
+Сохранить: `Ctrl+O` → `Enter` → `Ctrl+X`
+
+### Backup — автоматический бэкап базы данных
+
+#### Шаг 1 — Открыть crontab (если ещё не открыт)
 
 ```bash
-# Ежедневный бэкап в 3:00
+crontab -e
+```
+
+#### Шаг 2 — Добавить строку
+
+```
 0 3 * * * /home/deploy/golden-connect/deploy/scripts/backup.sh >> /home/deploy/backup.log 2>&1
 ```
+
+Это будет делать бэкап базы данных каждый день в 3:00 ночи.
+
+#### Шаг 3 — Проверить что cron задачи добавлены
+
+```bash
+crontab -l
+```
+
+Должно показать обе строки.
 
 ---
 
 ## Чеклист перед первым деплоем
 
-- [ ] Сервер настроен (Docker, firewall, пользователь `deploy`)
-- [ ] SSH-ключ для GitHub Actions создан и добавлен на сервер
-- [ ] Репозиторий склонирован на сервер
-- [ ] `.env` настроен с production-значениями
-- [ ] Docker авторизован в GHCR на сервере
-- [ ] GitHub Environment `production` создан
-- [ ] GitHub Secrets добавлены (5 штук)
-- [ ] Первичный деплой выполнен (`./deploy/scripts/deploy.sh`)
-- [ ] SSL-сертификат настроен
-- [ ] Cron для health check и backup добавлен
-- [ ] DNS A-запись указывает на сервер
+Пройдитесь по списку и убедитесь что всё выполнено:
+
+- [ ] Docker установлен на сервере (шаг 2.1)
+- [ ] Пользователь `deploy` создан (шаг 2.2)
+- [ ] SSH-ключ для GitHub Actions создан (шаг 2.3)
+- [ ] Firewall настроен (шаг 2.4)
+- [ ] Репозиторий склонирован на сервер (шаг 3.1)
+- [ ] `.env` заполнен production-значениями (шаг 3.2)
+- [ ] Первичный деплой выполнен — `./deploy/scripts/deploy.sh` (шаг 3.4)
+- [ ] Сайт открывается в браузере по IP
+- [ ] (Опционально) GitHub Actions настроен (шаг 4)
+- [ ] (Опционально) SSL-сертификат настроен (шаг 6)
+- [ ] (Опционально) Cron для health check и backup добавлен (шаг 7)
 
 ## See Also
 
