@@ -7,7 +7,8 @@ if [ ! -f /app/vendor/autoload.php ]; then
 fi
 
 if [ "${INSTALL_NODE_DEPS:-true}" = "true" ]; then
-    if [ ! -d /app/node_modules ] || [ ! -f /app/node_modules/.package-lock.json ]; then
+    if [ ! -f /app/node_modules/.package-lock.json ] || \
+       ! diff -q /app/package-lock.json /app/node_modules/.package-lock.json > /dev/null 2>&1; then
         echo "Installing NPM dependencies..."
         npm install
     fi

@@ -47,7 +47,7 @@ RUN apk add --no-cache \
     && cd / && git clone --depth 1 https://github.com/phpredis/phpredis.git /tmp/phpredis \
     && cd /tmp/phpredis && phpize && ./configure && make -j$(nproc) && make install \
     && rm -rf /tmp/phpredis \
-    && git clone --depth 1 https://github.com/xdebug/xdebug.git /tmp/xdebug \
+    && cd / && git clone --depth 1 https://github.com/xdebug/xdebug.git /tmp/xdebug \
     && cd /tmp/xdebug && phpize && ./configure && make -j$(nproc) && make install \
     && rm -rf /tmp/xdebug \
     && docker-php-ext-enable swoole redis xdebug \

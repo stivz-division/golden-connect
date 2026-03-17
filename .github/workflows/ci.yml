@@ -92,6 +92,13 @@ jobs:
           extensions: swoole, redis, pdo_mysql
           coverage: pcov
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci && npm run build
+
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
