@@ -29,7 +29,7 @@ class SetLocale
             }
         }
 
-        if ($request->routeIs('locale.index', 'locale.store', 'locale.update')) {
+        if ($request->routeIs('locale.index', 'locale.store', 'locale.update', 'login', 'password.request', 'password.reset', 'register')) {
             app()->setLocale(config('locales.default', 'ru'));
 
             return $next($request);

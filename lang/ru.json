@@ -2,5 +2,19 @@
     "language.title": "Выберите язык",
     "language.subtitle": "Выберите предпочитаемый язык интерфейса",
     "language.continue": "Продолжить",
-    "common.back": "Назад"
+    "common.back": "Назад",
+    "auth.welcomeBack": "С возвращением!",
+    "auth.loginSubtitle": "Войдите в систему Golden Connect",
+    "auth.login": "Логин",
+    "auth.password": "Пароль",
+    "auth.forgotPassword": "Забыли пароль?",
+    "auth.loginButton": "Войти",
+    "auth.noAccount": "Нет аккаунта?",
+    "auth.registerButton": "Зарегистрироваться",
+    "placeholder.enterLogin": "Введите логин",
+    "placeholder.enterPassword": "Введите пароль",
+    "validation.loginRequired": "Логин обязателен",
+    "validation.passwordRequired": "Пароль обязателен",
+    "info.guaranteedProfit": "Гарантированный доход +100% от суммы вашего лота",
+    "info.lotRange": "Минимальный лот: $50 • Максимальный лот: $1,000"
 }

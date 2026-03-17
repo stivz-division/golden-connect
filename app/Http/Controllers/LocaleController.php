@@ -35,7 +35,7 @@ class LocaleController extends Controller
         session(['locale' => $locale]);
         app()->setLocale($locale);
 
-        return redirect()->route('locale.index');
+        return redirect()->back();
     }
 
     public function store(StoreLocaleRequest $request): RedirectResponse
@@ -52,6 +52,6 @@ class LocaleController extends Controller
         //     $request->user()->update(['language' => $locale]);
         // }
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

@@ -2,5 +2,19 @@
     "language.title": "Choose your language",
     "language.subtitle": "Select your preferred interface language",
     "language.continue": "Continue",
-    "common.back": "Back"
+    "common.back": "Back",
+    "auth.welcomeBack": "Welcome Back!",
+    "auth.loginSubtitle": "Sign in to Golden Connect system",
+    "auth.login": "Login",
+    "auth.password": "Password",
+    "auth.forgotPassword": "Forgot password?",
+    "auth.loginButton": "Sign In",
+    "auth.noAccount": "No account?",
+    "auth.registerButton": "Register",
+    "placeholder.enterLogin": "Enter login",
+    "placeholder.enterPassword": "Enter password",
+    "validation.loginRequired": "Login is required",
+    "validation.passwordRequired": "Password is required",
+    "info.guaranteedProfit": "Guaranteed profit +100% from your lot amount",
+    "info.lotRange": "Minimum lot: $50 • Maximum lot: $1,000"
 }

@@ -11,3 +11,9 @@ Route::post('/locale', [LocaleController::class, 'store'])->name('locale.store')
 Route::get('/', static function () {
     return Inertia::render('Welcome');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', static function () {
+        return Inertia::render('Dashboard/Index');
+    })->name('dashboard');
+});
