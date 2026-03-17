@@ -27,6 +27,7 @@ COPY package.json package-lock.json* ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
 COPY resources/ resources/
+COPY --from=vendor /app/vendor/tightenco/ziggy vendor/tightenco/ziggy
 COPY vite.config.js tailwind.config.js* postcss.config.js* ./
 RUN npm run build
 
@@ -38,15 +39,20 @@ RUN apk add --no-cache \
         $PHPIZE_DEPS \
         openssl-dev \
         curl-dev \
-        mysql-client \
-        nodejs \
-        npm \
-        unzip \
+        git \
     && docker-php-ext-install pdo_mysql opcache bcmath pcntl sockets \
-    && pecl install -D 'enable-sockets="no" enable-openssl="yes" enable-http2="no" enable-mysqlnd="no" enable-swoole-curl="yes" enable-cares="no" enable-brotli="no"' swoole \
-    && pecl install redis xdebug \
+    && git clone --depth 1 https://github.com/swoole/swoole-src.git /tmp/swoole \
+    && cd /tmp/swoole && phpize && ./configure --enable-openssl --enable-swoole-curl && make -j$(nproc) && make install \
+    && rm -rf /tmp/swoole \
+    && cd / && git clone --depth 1 https://github.com/phpredis/phpredis.git /tmp/phpredis \
+    && cd /tmp/phpredis && phpize && ./configure && make -j$(nproc) && make install \
+    && rm -rf /tmp/phpredis \
+    && git clone --depth 1 https://github.com/xdebug/xdebug.git /tmp/xdebug \
+    && cd /tmp/xdebug && phpize && ./configure && make -j$(nproc) && make install \
+    && rm -rf /tmp/xdebug \
     && docker-php-ext-enable swoole redis xdebug \
-    && apk del $PHPIZE_DEPS
+    && apk del $PHPIZE_DEPS git \
+    && apk add --no-cache mysql-client nodejs npm unzip
 
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 RUN echo "opcache.jit=disable" >> /usr/local/etc/php/conf.d/opcache.ini
@@ -64,12 +70,16 @@ CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 # --- Production ---
 FROM php:8.4-cli-alpine AS production
 
-RUN apk add --no-cache linux-headers $PHPIZE_DEPS openssl-dev curl-dev \
+RUN apk add --no-cache linux-headers $PHPIZE_DEPS openssl-dev curl-dev git \
     && docker-php-ext-install pdo_mysql opcache bcmath pcntl sockets \
-    && pecl install -D 'enable-sockets="no" enable-openssl="yes" enable-http2="no" enable-mysqlnd="no" enable-swoole-curl="yes" enable-cares="no" enable-brotli="no"' swoole \
-    && pecl install redis \
+    && git clone --depth 1 https://github.com/swoole/swoole-src.git /tmp/swoole \
+    && cd /tmp/swoole && phpize && ./configure --enable-openssl --enable-swoole-curl && make -j$(nproc) && make install \
+    && rm -rf /tmp/swoole \
+    && cd / && git clone --depth 1 https://github.com/phpredis/phpredis.git /tmp/phpredis \
+    && cd /tmp/phpredis && phpize && ./configure && make -j$(nproc) && make install \
+    && rm -rf /tmp/phpredis \
     && docker-php-ext-enable swoole redis \
-    && apk del $PHPIZE_DEPS linux-headers
+    && apk del $PHPIZE_DEPS linux-headers git
 
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/php-production.ini /usr/local/etc/php/conf.d/php-production.ini
