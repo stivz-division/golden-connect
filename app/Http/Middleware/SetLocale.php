@@ -12,14 +12,12 @@ class SetLocale
     {
         $availableLocales = array_keys(config('locales.available', []));
 
-        // TODO: раскомментировать когда у User появится поле language
-        // if ($request->user() && in_array($request->user()->language, $availableLocales, true)) {
-        //     $locale = $request->user()->language;
-        //     session(['locale' => $locale]);
-        //     app()->setLocale($locale);
-        //     Log::debug('SetLocale: locale from user profile', ['locale' => $locale]);
-        //     return $next($request);
-        // }
+         if ($request->user() && in_array($request->user()->language, $availableLocales, true)) {
+             $locale = $request->user()->language;
+             session(['locale' => $locale]);
+             app()->setLocale($locale);
+             return $next($request);
+         }
 
         if ($sessionLocale = session('locale')) {
             if (in_array($sessionLocale, $availableLocales, true)) {
@@ -29,7 +27,7 @@ class SetLocale
             }
         }
 
-        if ($request->routeIs('locale.index', 'locale.store', 'locale.update', 'login', 'password.request', 'password.reset', 'register')) {
+        if ($request->routeIs('locale.index', 'locale.store', 'locale.update', 'login.store', 'register.store')) {
             app()->setLocale(config('locales.default', 'ru'));
 
             return $next($request);

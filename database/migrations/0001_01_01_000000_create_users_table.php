@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('language');
             $table->rememberToken();
             $table->timestamps();
+
+            $table->nestedSet();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

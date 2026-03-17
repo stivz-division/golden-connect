@@ -77,6 +77,14 @@
   max-width: 560px;
 }
 
+/* Wide variant: scrollable page for longer forms (register) */
+.auth-page:has(.auth-container--wide) {
+  overflow: auto;
+  align-items: flex-start;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
 /* Auth Card */
 
 .auth-card {
@@ -91,6 +99,7 @@
   padding: 2.5rem;
   position: relative;
   z-index: 1;
+  margin: 0 auto;
 }
 
 @media (max-width: 640px) {
@@ -373,6 +382,25 @@
 @media (max-width: 640px) {
   .auth-footer-text, .auth-switch-btn { font-size: 0.75rem; }
   .auth-footer { margin-top: 1rem; }
+}
+
+/* Name Row (first name + last name side by side) */
+
+.auth-name-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.auth-name-row .auth-field {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .auth-name-row {
+    flex-direction: column;
+    gap: 0.875rem;
+  }
 }
 
 /* Info Block */

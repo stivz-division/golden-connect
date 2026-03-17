@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -36,12 +37,25 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
         ])->validate();
 
-        return User::create([
-            'login' => $input['login'],
-            'name' => $input['name'],
-            'surname' => $input['surname'],
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-        ]);
+        return DB::transaction(function () use ($input) {
+            $user = new User([
+                'login' => $input['login'],
+                'name' => $input['name'],
+                'surname' => $input['surname'],
+                'email' => $input['email'],
+                'password' => Hash::make($input['password']),
+                'language' => session('locale', config('locales.default', 'ru')),
+            ]);
+
+            $parent = User::query()->orderBy('id')->first();
+
+            if ($parent) {
+                $user->appendToNode($parent)->save();
+            } else {
+                $user->saveAsRoot();
+            }
+
+            return $user;
+        });
     }
 }
