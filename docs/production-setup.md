@@ -1,4 +1,4 @@
-[← Deployment](deployment.md) · [Back to README](../README.md)
+[← Deployment](deployment.md) · [Back to README](../README.md) · [Localization →](localization.md)
 
 # Production Setup — Полная инструкция
 
