@@ -24,7 +24,7 @@ class SetLocale
         if ($sessionLocale = session('locale')) {
             if (in_array($sessionLocale, $availableLocales, true)) {
                 app()->setLocale($sessionLocale);
-                
+
                 return $next($request);
             }
         }
