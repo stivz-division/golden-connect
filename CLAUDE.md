@@ -9,6 +9,12 @@
 ## Laravel Pint
 Нужно проверять ./vendor/bin/pint --test
 
+## Exception
+Для новых ошибок создаем свои Exception
+
+## Form Request
+Не забывай про валидацию если она нужна
+
 ## Docker
 Работа идет в контейнере: docker exec -it app sh
 
