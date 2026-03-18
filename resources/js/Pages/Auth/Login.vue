@@ -1,14 +1,12 @@
-<script setup>
-import { ref } from 'vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
-import { User, Lock, Eye, EyeOff } from 'lucide-vue-next';
-import { useTranslations } from '@/Composables/useTranslations.js';
-import AuthLayout from '@/Layouts/AuthLayout.vue';
-import logoNav from '@/../images/logo-nav.png';
+<script setup lang="ts">
+import { Head, useForm, Link } from '@inertiajs/vue3'
+import { User } from 'lucide-vue-next'
+import { useTranslations } from '@/Composables/useTranslations.js'
+import AuthLayout from '@/Layouts/AuthLayout.vue'
+import AuthPasswordField from '@/Components/AuthPasswordField.vue'
+import logoNav from '@/../images/logo-nav.png'
 
-const { t } = useTranslations();
-
-const showPassword = ref(false);
+const { t } = useTranslations()
 
 const form = useForm({
     login: '',
@@ -62,35 +60,14 @@ const submit = () => {
                     </p>
                 </div>
 
-                <div class="auth-field">
-                    <label class="auth-label" for="password">{{ t('auth.password') }}</label>
-                    <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">
-                            <Lock :size="16" />
-                        </span>
-                        <input
-                            id="password"
-                            v-model="form.password"
-                            :type="showPassword ? 'text' : 'password'"
-                            class="auth-input has-icon has-toggle"
-                            :class="{ error: form.errors.password }"
-                            :placeholder="t('placeholder.enterPassword')"
-                            autocomplete="current-password"
-                        />
-                        <button
-                            type="button"
-                            class="auth-toggle-btn"
-                            :aria-label="showPassword ? 'Hide password' : 'Show password'"
-                            @click="showPassword = !showPassword"
-                        >
-                            <EyeOff v-if="showPassword" :size="16" />
-                            <Eye v-else :size="16" />
-                        </button>
-                    </div>
-                    <p v-if="form.errors.password" class="auth-error">
-                        {{ form.errors.password }}
-                    </p>
-                </div>
+                <AuthPasswordField
+                    id="password"
+                    v-model="form.password"
+                    :label="t('auth.password')"
+                    :placeholder="t('placeholder.enterPassword')"
+                    :error="form.errors.password"
+                    autocomplete="current-password"
+                />
 
                 <div class="auth-forgot">
                     <Link class="auth-forgot-link" :href="route('password.request')">

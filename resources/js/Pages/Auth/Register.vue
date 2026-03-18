@@ -1,15 +1,12 @@
-<script setup>
-import { ref } from 'vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
-import { UserCircle, User, Mail, Lock, Eye, EyeOff } from 'lucide-vue-next';
-import { useTranslations } from '@/Composables/useTranslations.js';
-import AuthLayout from '@/Layouts/AuthLayout.vue';
-import logoNav from '@/../images/logo-nav.png';
+<script setup lang="ts">
+import { Head, useForm, Link } from '@inertiajs/vue3'
+import { UserCircle, User, Mail } from 'lucide-vue-next'
+import { useTranslations } from '@/Composables/useTranslations.js'
+import AuthLayout from '@/Layouts/AuthLayout.vue'
+import AuthPasswordField from '@/Components/AuthPasswordField.vue'
+import logoNav from '@/../images/logo-nav.png'
 
-const { t } = useTranslations();
-
-const showPassword = ref(false);
-const showConfirmPassword = ref(false);
+const { t } = useTranslations()
 
 const form = useForm({
     login: '',
@@ -18,13 +15,13 @@ const form = useForm({
     password_confirmation: '',
     name: '',
     surname: '',
-});
+})
 
 const submit = () => {
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
-    });
-};
+    })
+}
 </script>
 
 <template>
@@ -87,65 +84,21 @@ const submit = () => {
                     </p>
                 </div>
 
-                <div class="auth-field">
-                    <label class="auth-label" for="password">{{ t('auth.password') }}</label>
-                    <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">
-                            <Lock :size="16" />
-                        </span>
-                        <input
-                            id="password"
-                            v-model="form.password"
-                            :type="showPassword ? 'text' : 'password'"
-                            class="auth-input has-icon has-toggle"
-                            :class="{ error: form.errors.password }"
-                            :placeholder="t('placeholder.enterPassword')"
-                            autocomplete="new-password"
-                        />
-                        <button
-                            type="button"
-                            class="auth-toggle-btn"
-                            :aria-label="showPassword ? 'Hide password' : 'Show password'"
-                            @click="showPassword = !showPassword"
-                        >
-                            <EyeOff v-if="showPassword" :size="16" />
-                            <Eye v-else :size="16" />
-                        </button>
-                    </div>
-                    <p v-if="form.errors.password" class="auth-error">
-                        {{ form.errors.password }}
-                    </p>
-                </div>
+                <AuthPasswordField
+                    id="password"
+                    v-model="form.password"
+                    :label="t('auth.password')"
+                    :placeholder="t('placeholder.enterPassword')"
+                    :error="form.errors.password"
+                />
 
-                <div class="auth-field">
-                    <label class="auth-label" for="password_confirmation">{{ t('auth.confirmPassword') }}</label>
-                    <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">
-                            <Lock :size="16" />
-                        </span>
-                        <input
-                            id="password_confirmation"
-                            v-model="form.password_confirmation"
-                            :type="showConfirmPassword ? 'text' : 'password'"
-                            class="auth-input has-icon has-toggle"
-                            :class="{ error: form.errors.password_confirmation }"
-                            :placeholder="t('placeholder.repeatPassword')"
-                            autocomplete="new-password"
-                        />
-                        <button
-                            type="button"
-                            class="auth-toggle-btn"
-                            :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
-                            @click="showConfirmPassword = !showConfirmPassword"
-                        >
-                            <EyeOff v-if="showConfirmPassword" :size="16" />
-                            <Eye v-else :size="16" />
-                        </button>
-                    </div>
-                    <p v-if="form.errors.password_confirmation" class="auth-error">
-                        {{ form.errors.password_confirmation }}
-                    </p>
-                </div>
+                <AuthPasswordField
+                    id="password_confirmation"
+                    v-model="form.password_confirmation"
+                    :label="t('auth.confirmPassword')"
+                    :placeholder="t('placeholder.repeatPassword')"
+                    :error="form.errors.password_confirmation"
+                />
 
                 <div class="auth-name-row">
                     <div class="auth-field">

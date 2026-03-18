@@ -75,6 +75,7 @@
 
 .auth-container--wide {
   max-width: 560px;
+  margin-block: auto;
 }
 
 /* Wide variant: scrollable page for longer forms (register) */

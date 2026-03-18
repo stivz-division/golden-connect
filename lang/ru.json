@@ -34,6 +34,8 @@
     "validation.passwordsMismatch": "Пароли не совпадают",
     "validation.firstNameRequired": "Имя обязательно",
     "validation.lastNameRequired": "Фамилия обязательна",
+    "auth.showPassword": "Показать пароль",
+    "auth.hidePassword": "Скрыть пароль",
     "info.guaranteedProfit": "Гарантированный доход +100% от суммы вашего лота",
     "info.lotRange": "Минимальный лот: $50 • Максимальный лот: $1,000"
 }

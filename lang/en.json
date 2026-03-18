@@ -34,6 +34,8 @@
     "validation.passwordsMismatch": "Passwords do not match",
     "validation.firstNameRequired": "First name is required",
     "validation.lastNameRequired": "Last name is required",
+    "auth.showPassword": "Show password",
+    "auth.hidePassword": "Hide password",
     "info.guaranteedProfit": "Guaranteed profit +100% from your lot amount",
     "info.lotRange": "Minimum lot: $50 • Maximum lot: $1,000"
 }
