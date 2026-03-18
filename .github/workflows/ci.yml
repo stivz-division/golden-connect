@@ -144,19 +144,17 @@ jobs:
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
 
-            sudo -u www-data bash -c '
-              git pull origin main
-              systemctl stop golden-connect.target
-              composer install --no-dev --optimize-autoloader
-              npm ci
-              npm run build
-              php artisan migrate --force
-              php artisan optimize:clear
-              php artisan config:cache
-              php artisan route:cache
-              php artisan view:cache
-              systemctl start golden-connect.target
-            '
+            git pull origin main
+            sudo systemctl stop golden-connect.target
+            composer install --no-dev --optimize-autoloader
+            npm ci
+            npm run build
+            php artisan migrate --force
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            sudo systemctl start golden-connect.target
 
       - name: Notify on failure
         if: failure()
