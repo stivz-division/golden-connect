@@ -13,10 +13,6 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
   lint:
     name: Lint
@@ -133,72 +129,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
-    permissions:
-      contents: read
-      packages: write
-
     concurrency:
       group: deploy-production
       cancel-in-progress: false
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set version
-        id: version
-        run: |
-          VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev-$(git rev-parse --short HEAD)")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push app image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          target: production
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha,scope=app
-          cache-to: type=gha,mode=max,scope=app
-          build-args: |
-            VERSION=${{ steps.version.outputs.version }}
-            COMMIT=${{ steps.version.outputs.sha_short }}
-            VITE_APP_NAME=${{ vars.VITE_APP_NAME || 'GoldenConnect' }}
-            VITE_REVERB_APP_KEY=${{ vars.VITE_REVERB_APP_KEY || 'golden-connect-key' }}
-            VITE_REVERB_HOST=${{ vars.VITE_REVERB_HOST }}
-            VITE_REVERB_PORT=${{ vars.VITE_REVERB_PORT || '80' }}
-            VITE_REVERB_SCHEME=${{ vars.VITE_REVERB_SCHEME || 'http' }}
-
-      - name: Build and push nginx image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          target: nginx
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-nginx:${{ steps.version.outputs.version }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-nginx:latest
-          cache-from: type=gha,scope=nginx
-          cache-to: type=gha,mode=max,scope=nginx
-          build-args: |
-            VITE_APP_NAME=${{ vars.VITE_APP_NAME || 'GoldenConnect' }}
-            VITE_REVERB_APP_KEY=${{ vars.VITE_REVERB_APP_KEY || 'golden-connect-key' }}
-            VITE_REVERB_HOST=${{ vars.VITE_REVERB_HOST }}
-            VITE_REVERB_PORT=${{ vars.VITE_REVERB_PORT || '80' }}
-            VITE_REVERB_SCHEME=${{ vars.VITE_REVERB_SCHEME || 'http' }}
-
       - name: Deploy to server
         uses: appleboy/ssh-action@v1
         with:
@@ -209,28 +144,19 @@ jobs:
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
 
-            git pull origin main
-
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-
-            docker compose -f compose.yml -f compose.production.yml pull app nginx
-
-            docker compose -f compose.yml -f compose.production.yml run --rm --entrypoint="" app php artisan migrate --force
-
-            docker compose -f compose.yml -f compose.production.yml up -d --force-recreate --no-deps app nginx horizon scheduler reverb
-
-            echo "Waiting for health check..."
-            for i in $(seq 1 60); do
-              HEALTH=$(docker compose -f compose.yml -f compose.production.yml ps --format '{{.Health}}' app 2>/dev/null || echo "starting")
-              if [ "$HEALTH" = "healthy" ]; then
-                echo "Application is healthy!"
-                exit 0
-              fi
-              sleep 1
-            done
-            echo "Health check failed!"
-            docker compose -f compose.yml -f compose.production.yml logs --tail=30 app
-            exit 1
+            sudo -u www-data bash -c '
+              git pull origin main
+              systemctl stop golden-connect.target
+              composer install --no-dev --optimize-autoloader
+              npm ci
+              npm run build
+              php artisan migrate --force
+              php artisan optimize:clear
+              php artisan config:cache
+              php artisan route:cache
+              php artisan view:cache
+              systemctl start golden-connect.target
+            '
 
       - name: Notify on failure
         if: failure()

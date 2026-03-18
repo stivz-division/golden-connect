@@ -12,12 +12,13 @@ class SetLocale
     {
         $availableLocales = array_keys(config('locales.available', []));
 
-         if ($request->user() && in_array($request->user()->language, $availableLocales, true)) {
-             $locale = $request->user()->language;
-             session(['locale' => $locale]);
-             app()->setLocale($locale);
-             return $next($request);
-         }
+        if ($request->user() && in_array($request->user()->language, $availableLocales, true)) {
+            $locale = $request->user()->language;
+            session(['locale' => $locale]);
+            app()->setLocale($locale);
+
+            return $next($request);
+        }
 
         if ($sessionLocale = session('locale')) {
             if (in_array($sessionLocale, $availableLocales, true)) {

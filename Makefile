@@ -21,11 +21,7 @@ COMMIT     ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_TIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 
 # --- Docker ---
-DOCKER_REGISTRY ?= ghcr.io
-DOCKER_IMAGE    ?= $(DOCKER_REGISTRY)/$(PROJECT)
-DOCKER_TAG      ?= $(VERSION)
 COMPOSE         := docker compose
-COMPOSE_PROD    := $(COMPOSE) -f compose.yml -f compose.production.yml
 
 # ============================================================================
 .DEFAULT_GOAL := help
@@ -187,30 +183,6 @@ docker-test: ## Run tests inside Docker container
 docker-migrate: ## Run migrations inside Docker container
 	$(COMPOSE) exec app php artisan migrate
 
-##@ Docker — Production
-
-.PHONY: docker-prod-build
-docker-prod-build: ## Build production Docker image
-	docker build \
-		--build-arg VERSION=$(VERSION) \
-		--build-arg COMMIT=$(COMMIT) \
-		-t $(DOCKER_IMAGE):$(DOCKER_TAG) \
-		-t $(DOCKER_IMAGE):latest \
-		.
-
-.PHONY: docker-prod-up
-docker-prod-up: ## Start production environment
-	$(COMPOSE_PROD) up -d
-
-.PHONY: docker-prod-down
-docker-prod-down: ## Stop production environment
-	$(COMPOSE_PROD) down
-
-.PHONY: docker-prod-push
-docker-prod-push: ## Push production image to registry
-	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
-	docker push $(DOCKER_IMAGE):latest
-
 ##@ Infrastructure
 
 .PHONY: infra-up
@@ -220,32 +192,6 @@ infra-up: ## Start only infrastructure (DB + Redis)
 .PHONY: infra-down
 infra-down: ## Stop infrastructure services
 	$(COMPOSE) stop db redis
-
-##@ Deploy
-
-.PHONY: deploy
-deploy: ## Initial production deployment
-	./deploy/scripts/deploy.sh
-
-.PHONY: update
-update: ## Update production (zero-downtime)
-	./deploy/scripts/update.sh $(VERSION)
-
-.PHONY: rollback
-rollback: ## Rollback to previous version
-	./deploy/scripts/rollback.sh
-
-.PHONY: backup
-backup: ## Backup MySQL database
-	./deploy/scripts/backup.sh
-
-.PHONY: health
-health: ## Check service health
-	./deploy/scripts/health-check.sh
-
-.PHONY: logs
-logs: ## View production logs
-	./deploy/scripts/logs.sh
 
 ##@ Cleanup
 
