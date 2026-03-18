@@ -7,7 +7,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 it('renders login page', function () {
-    $response = $this->get(route('login'));
+    $response = $this
+        ->withSession(['locale' => 'ru'])
+        ->get(route('login'));
 
     $response->assertStatus(200);
     $response->assertInertia(fn ($page) => $page->component('Auth/Login'));
