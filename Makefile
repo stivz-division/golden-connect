@@ -156,8 +156,8 @@ optimize: ## Cache config, routes, views, events for production
 ##@ Docker — Development
 
 .PHONY: docker-dev
-docker-dev: ## Start all services in dev mode
-	$(COMPOSE) up -d
+docker-dev: ## Start all services in dev mode (including mailpit)
+	$(COMPOSE) --profile dev up -d
 
 .PHONY: docker-dev-build
 docker-dev-build: ## Rebuild dev containers

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLocaleRequest;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -45,12 +44,9 @@ class LocaleController extends Controller
         session(['locale' => $locale]);
         app()->setLocale($locale);
 
-        Log::debug('LocaleController: locale confirmed', ['locale' => $locale]);
-
-        // TODO: раскомментировать когда у User появится поле language
-        // if ($request->user()) {
-        //     $request->user()->update(['language' => $locale]);
-        // }
+        if ($request->user()) {
+            $request->user()->update(['language' => $locale]);
+        }
 
         return redirect()->route('login');
     }
