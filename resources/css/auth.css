@@ -80,7 +80,8 @@
 
 /* Wide variant: scrollable page for longer forms (register) */
 .auth-page:has(.auth-container--wide) {
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   align-items: flex-start;
   padding-top: 2rem;
   padding-bottom: 2rem;
