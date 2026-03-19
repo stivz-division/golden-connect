@@ -50,5 +50,10 @@
     "reset.subtitle": "Введите новый пароль для вашего аккаунта",
     "reset.newPassword": "Новый пароль",
     "reset.confirmPassword": "Подтверждение пароля",
-    "reset.resetButton": "Сбросить пароль"
+    "reset.resetButton": "Сбросить пароль",
+    "auth.yourMentor": "Ваш наставник",
+    "auth.mentorNotFound": "Наставник не найден",
+    "auth.mentorLoading": "Загрузка...",
+    "auth.mentorNotFoundMessage": "Наставник не найден. Запросите корректную ссылку для регистрации.",
+    "auth.registrationUnavailable": "Регистрация недоступна"
 }

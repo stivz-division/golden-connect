@@ -149,3 +149,98 @@ it('redirects authenticated user from register page to dashboard', function () {
 
     $response->assertRedirect(route('dashboard'));
 });
+
+it('registers user with valid ref and attaches to mentor', function () {
+    $mentor = User::factory()->create(['login' => 'mentor1']);
+    $mentor->saveAsRoot();
+
+    $response = $this->withoutMiddleware(ValidateCsrfToken::class)
+        ->withSession(['locale' => 'ru'])
+        ->post(route('register'), [
+            'login' => 'refuser',
+            'name' => 'Ref',
+            'surname' => 'User',
+            'email' => 'ref@example.com',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'ref' => 'mentor1',
+        ]);
+
+    $this->assertAuthenticated();
+
+    $newUser = User::where('login', 'refuser')->first();
+    $mentor->refresh();
+
+    expect($newUser)->not->toBeNull();
+    expect($newUser->parent_id)->toBe($mentor->id);
+    expect($newUser->isDescendantOf($mentor))->toBeTrue();
+});
+
+it('blocks registration with invalid ref', function () {
+    $response = $this->withoutMiddleware(ValidateCsrfToken::class)
+        ->withSession(['locale' => 'ru'])
+        ->post(route('register'), [
+            'login' => 'blockeduser',
+            'name' => 'Blocked',
+            'surname' => 'User',
+            'email' => 'blocked@example.com',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'ref' => 'nonexistent_mentor',
+        ]);
+
+    $response->assertSessionHasErrors(['ref']);
+    $this->assertGuest();
+    $this->assertDatabaseMissing('users', ['login' => 'blockeduser']);
+});
+
+it('registers user without ref and attaches to first user', function () {
+    $firstUser = User::factory()->create(['login' => 'firstuser']);
+    $firstUser->saveAsRoot();
+
+    $response = $this->withoutMiddleware(ValidateCsrfToken::class)
+        ->withSession(['locale' => 'ru'])
+        ->post(route('register'), [
+            'login' => 'norefuser',
+            'name' => 'NoRef',
+            'surname' => 'User',
+            'email' => 'noref@example.com',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+        ]);
+
+    $this->assertAuthenticated();
+
+    $newUser = User::where('login', 'norefuser')->first();
+
+    expect($newUser)->not->toBeNull();
+    expect($newUser->parent_id)->toBe($firstUser->id);
+});
+
+it('passes ref query parameter as inertia prop on register page', function () {
+    $response = $this
+        ->withSession(['locale' => 'ru'])
+        ->get(route('register', ['ref' => 'testmentor']));
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Auth/Register')
+        ->where('ref', 'testmentor')
+        ->where('mentorLogin', 'testmentor')
+    );
+});
+
+it('passes first user login as mentorLogin when no ref provided', function () {
+    $firstUser = User::factory()->create(['login' => 'defaultmentor']);
+
+    $response = $this
+        ->withSession(['locale' => 'ru'])
+        ->get(route('register'));
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Auth/Register')
+        ->where('ref', null)
+        ->where('mentorLogin', 'defaultmentor')
+    );
+});

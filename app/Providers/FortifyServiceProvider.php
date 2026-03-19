@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -31,7 +32,15 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::loginView(fn () => Inertia::render('Auth/Login'));
-        Fortify::registerView(fn () => Inertia::render('Auth/Register'));
+        Fortify::registerView(function (Request $request) {
+            $ref = $request->query('ref');
+            $mentorLogin = $ref ?: User::query()->orderBy('id')->value('login');
+
+            return Inertia::render('Auth/Register', [
+                'ref' => $ref,
+                'mentorLogin' => $mentorLogin,
+            ]);
+        });
 
         Fortify::requestPasswordResetLinkView(fn () => Inertia::render('Auth/ForgotPassword'));
 

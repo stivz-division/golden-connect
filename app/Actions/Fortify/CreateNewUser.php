@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -37,7 +38,10 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
         ])->validate();
 
-        return DB::transaction(function () use ($input) {
+        $refLogin = $input['ref'] ?? null;
+        $mentor = $this->resolveMentor($refLogin);
+
+        return DB::transaction(function () use ($input, $mentor) {
             $user = new User([
                 'login' => $input['login'],
                 'name' => $input['name'],
@@ -47,15 +51,39 @@ class CreateNewUser implements CreatesNewUsers
                 'language' => session('locale', config('locales.default', 'ru')),
             ]);
 
-            $parent = User::query()->orderBy('id')->first();
-
-            if ($parent) {
-                $user->appendToNode($parent)->save();
+            if ($mentor) {
+                $user->appendToNode($mentor)->save();
             } else {
                 $user->saveAsRoot();
             }
 
             return $user;
         });
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    private function resolveMentor(?string $refLogin): ?User
+    {
+        if ($refLogin === null || $refLogin === '') {
+            $firstUser = User::query()->orderBy('id')->first();
+
+            return $firstUser;
+        }
+
+        $mentor = User::where('login', $refLogin)->first();
+
+        if (! $mentor) {
+            throw ValidationException::withMessages([
+                'ref' => [__('auth.mentorNotFoundMessage')],
+            ]);
+        }
+
+        Log::debug('Referral mentor resolved', [
+            'mentor' => $mentor->login,
+        ]);
+
+        return $mentor;
     }
 }

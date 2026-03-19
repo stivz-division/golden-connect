@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { Head, useForm, Link } from '@inertiajs/vue3'
-import { UserCircle, User, Mail } from 'lucide-vue-next'
+import { Head, useForm, Link, usePage } from '@inertiajs/vue3'
+import { UserCircle, User, Mail, Users, AlertTriangle } from 'lucide-vue-next'
 import { useTranslations } from '@/Composables/useTranslations.js'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import AuthPasswordField from '@/Components/AuthPasswordField.vue'
 import logoNav from '@/../images/logo-nav.png'
+import { ref as vueRef, onMounted } from 'vue'
 
 const { t } = useTranslations()
+const page = usePage()
+
+const refLogin = (page.props.ref as string | null) ?? null
+const mentorLogin = (page.props.mentorLogin as string | null) ?? null
+
+const mentorInfo = vueRef<{ name: string; surname: string; login: string } | null>(null)
+const mentorLoading = vueRef(false)
+const mentorError = vueRef(false)
 
 const form = useForm({
     login: '',
@@ -15,7 +24,33 @@ const form = useForm({
     password_confirmation: '',
     name: '',
     surname: '',
+    ref: refLogin ?? '',
 })
+
+onMounted(async () => {
+    if (!mentorLogin) return
+
+    mentorLoading.value = true
+    try {
+        const response = await fetch(`/api/mentor/${encodeURIComponent(mentorLogin)}`)
+        if (response.ok) {
+            mentorInfo.value = await response.json()
+        } else if (refLogin) {
+            mentorError.value = true
+        }
+    } catch {
+        if (refLogin) {
+            mentorError.value = true
+        }
+    } finally {
+        mentorLoading.value = false
+    }
+})
+
+const canSubmit = (): boolean => {
+    if (mentorError.value || mentorLoading.value) return false
+    return !form.processing
+}
 
 const submit = () => {
     form.post(route('register'), {
@@ -41,7 +76,39 @@ const submit = () => {
                 <p class="auth-subtitle">{{ t('auth.registerSubtitle') }}</p>
             </div>
 
-            <form class="auth-form" @submit.prevent="submit">
+            <!-- Mentor loading -->
+            <div v-if="mentorLogin && mentorLoading" class="mentor-card mentor-card--loading">
+                <div class="mentor-card__icon">
+                    <Users :size="20" />
+                </div>
+                <div class="mentor-card__info">
+                    <span class="mentor-card__label">{{ t('auth.yourMentor') }}</span>
+                    <span class="mentor-card__loading">{{ t('auth.mentorLoading') }}</span>
+                </div>
+            </div>
+
+            <!-- Mentor found -->
+            <div v-if="mentorInfo && !mentorLoading" class="mentor-card">
+                <div class="mentor-card__icon">
+                    <Users :size="20" />
+                </div>
+                <div class="mentor-card__info">
+                    <span class="mentor-card__label">{{ t('auth.yourMentor') }}</span>
+                    <span class="mentor-card__name">{{ mentorInfo.name }} {{ mentorInfo.surname }}</span>
+                    <span class="mentor-card__login">@{{ mentorInfo.login }}</span>
+                </div>
+            </div>
+
+            <!-- Mentor not found — block registration (only when ref was explicitly provided) -->
+            <div v-if="refLogin && mentorError && !mentorLoading" class="mentor-error">
+                <div class="mentor-error__icon">
+                    <AlertTriangle :size="24" />
+                </div>
+                <h2 class="mentor-error__title">{{ t('auth.registrationUnavailable') }}</h2>
+                <p class="mentor-error__message">{{ t('auth.mentorNotFoundMessage') }}</p>
+            </div>
+
+            <form v-if="!mentorError" class="auth-form" @submit.prevent="submit">
                 <div class="auth-field">
                     <label class="auth-label" for="login">{{ t('auth.login') }}</label>
                     <div class="auth-input-wrapper">
@@ -133,16 +200,18 @@ const submit = () => {
                     </div>
                 </div>
 
+                <input type="hidden" name="ref" :value="form.ref" />
+
                 <button
                     type="submit"
                     class="auth-submit"
-                    :disabled="form.processing"
+                    :disabled="!canSubmit()"
                 >
                     {{ t('auth.registerButton') }}
                 </button>
             </form>
 
-            <div class="auth-footer">
+            <div v-if="!mentorError" class="auth-footer">
                 <p class="auth-footer-text">
                     {{ t('auth.haveAccount') }}
                     <Link class="auth-switch-btn" :href="route('login')">

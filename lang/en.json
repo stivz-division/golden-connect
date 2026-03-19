@@ -50,5 +50,10 @@
     "reset.subtitle": "Enter a new password for your account",
     "reset.newPassword": "New Password",
     "reset.confirmPassword": "Confirm Password",
-    "reset.resetButton": "Reset Password"
+    "reset.resetButton": "Reset Password",
+    "auth.yourMentor": "Your Mentor",
+    "auth.mentorNotFound": "Mentor not found",
+    "auth.mentorLoading": "Loading...",
+    "auth.mentorNotFoundMessage": "Mentor not found. Please request a valid registration link.",
+    "auth.registrationUnavailable": "Registration unavailable"
 }
