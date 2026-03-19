@@ -37,5 +37,18 @@
     "auth.showPassword": "Show password",
     "auth.hidePassword": "Hide password",
     "info.guaranteedProfit": "Guaranteed profit +100% from your lot amount",
-    "info.lotRange": "Minimum lot: $50 • Maximum lot: $1,000"
+    "info.lotRange": "Minimum lot: $50 • Maximum lot: $1,000",
+    "auth.backToLogin": "Back to login",
+    "forgot.title": "Forgot Password?",
+    "forgot.subtitle": "Enter your email and we'll send you password reset instructions",
+    "forgot.emailLabel": "Email",
+    "forgot.sendInstructions": "Send Instructions",
+    "forgot.checkEmail": "Check Your Email",
+    "forgot.instructionsSent": "We've sent a password reset link to the specified email. Check your Inbox and Spam folders.",
+    "forgot.infoMessage": "A password reset link will be sent to the specified email. The link is valid for 60 minutes.",
+    "reset.title": "Reset Password",
+    "reset.subtitle": "Enter a new password for your account",
+    "reset.newPassword": "New Password",
+    "reset.confirmPassword": "Confirm Password",
+    "reset.resetButton": "Reset Password"
 }

@@ -37,5 +37,18 @@
     "auth.showPassword": "Показать пароль",
     "auth.hidePassword": "Скрыть пароль",
     "info.guaranteedProfit": "Гарантированный доход +100% от суммы вашего лота",
-    "info.lotRange": "Минимальный лот: $50 • Максимальный лот: $1,000"
+    "info.lotRange": "Минимальный лот: $50 • Максимальный лот: $1,000",
+    "auth.backToLogin": "Вернуться к входу",
+    "forgot.title": "Забыли пароль?",
+    "forgot.subtitle": "Введите email, и мы отправим инструкции по сбросу пароля",
+    "forgot.emailLabel": "Email",
+    "forgot.sendInstructions": "Отправить инструкции",
+    "forgot.checkEmail": "Проверьте почту",
+    "forgot.instructionsSent": "Мы отправили ссылку для сброса пароля на указанный email. Проверьте папку «Входящие» и «Спам».",
+    "forgot.infoMessage": "На указанный email будет отправлена ссылка для сброса пароля. Ссылка действительна в течение 60 минут.",
+    "reset.title": "Сброс пароля",
+    "reset.subtitle": "Введите новый пароль для вашего аккаунта",
+    "reset.newPassword": "Новый пароль",
+    "reset.confirmPassword": "Подтверждение пароля",
+    "reset.resetButton": "Сбросить пароль"
 }

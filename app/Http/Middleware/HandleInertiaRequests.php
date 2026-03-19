@@ -56,6 +56,7 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             'locales' => $locales,
             'translations' => $translations,
+            'status' => fn () => $request->session()->get('status'),
         ];
     }
 }
