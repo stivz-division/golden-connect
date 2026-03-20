@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,8 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->isProduction()) {
+        if (Config::boolean('app.force_https', false)) {
             URL::forceScheme('https');
+        }
+
+        if (app()->isProduction()) {
             URL::useOrigin(config('app.url'));
         }
     }
