@@ -24,10 +24,13 @@ class SendCodeRequest extends FormRequest
         if ($this->input('type') === ContactType::Email->value) {
             $identifierRules[] = 'email';
             $identifierRules[] = 'indisposable';
-            $identifierRules[] = Rule::unique('users', 'email');
+
+            if ($this->routeIs('register.send-code')) {
+                $identifierRules[] = Rule::unique('users', 'email');
+            }
         }
 
-        if ($this->input('type') === ContactType::Phone->value) {
+        if ($this->input('type') === ContactType::Phone->value && $this->routeIs('register.send-code')) {
             $identifierRules[] = Rule::unique('users', 'phone');
         }
 
