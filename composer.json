@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "cweagans/composer-patches": "^1.7",
         "inertiajs/inertia-laravel": "^2.0",
         "kalnoy/nestedset": "^6.0",
         "laravel/fortify": "^1.36",
@@ -15,7 +16,7 @@
         "laravel/octane": "^2.15",
         "laravel/reverb": "^1.0",
         "laravel/tinker": "^2.10.1",
-        "cweagans/composer-patches": "^1.7",
+        "spatie/laravel-data": "^4.20",
         "tightenco/ziggy": "^2.6"
     },
     "require-dev": {

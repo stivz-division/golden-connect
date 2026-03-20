@@ -1,4 +1,4 @@
-[← Configuration](configuration.md) · [Back to README](../README.md) · [Production Setup →](production-setup.md)
+[← Configuration](configuration.md) · [Back to README](../README.md) · [Telegram Gateway →](telegram-gateway.md)
 
 # Deployment
 

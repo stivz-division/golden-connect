@@ -46,7 +46,7 @@ PHP 8.4 / Laravel 12 / MySQL / Vue.js + Inertia.js / Redis / Laravel Horizon / O
 | [Architecture](docs/architecture.md) | DDD, bounded contexts, структура проекта |
 | [Configuration](docs/configuration.md) | Переменные окружения, Nova Settings |
 | [Deployment](docs/deployment.md) | Docker, Octane, production deploy |
-| [Production Setup](docs/production-setup.md) | Настройка сервера и CI/CD |
+| [Telegram Gateway](docs/telegram-gateway.md) | Верификация через Telegram Gateway API |
 
 ## Quick Commands
 

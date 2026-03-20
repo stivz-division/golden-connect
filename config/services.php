@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'telegram_gateway' => [
+        'token' => env('TELEGRAM_GATEWAY_TOKEN'),
+        'base_url' => env('TELEGRAM_GATEWAY_BASE_URL', 'https://gatewayapi.telegram.org'),
+    ],
+
 ];
