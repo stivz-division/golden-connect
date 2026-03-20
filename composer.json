@@ -16,6 +16,7 @@
         "laravel/octane": "^2.15",
         "laravel/reverb": "^1.0",
         "laravel/tinker": "^2.10.1",
+        "propaganistas/laravel-disposable-email": "^2.4",
         "spatie/laravel-data": "^4.20",
         "tightenco/ziggy": "^2.6"
     },

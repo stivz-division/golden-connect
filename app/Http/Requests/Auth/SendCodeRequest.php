@@ -19,9 +19,23 @@ class SendCodeRequest extends FormRequest
      */
     public function rules(): array
     {
+        $identifierRules = ['required', 'string', 'max:255'];
+
+        if ($this->input('type') === ContactType::Email->value) {
+            $identifierRules[] = 'email';
+            $identifierRules[] = 'indisposable';
+        }
+
         return [
             'type' => ['required', Rule::enum(ContactType::class)],
-            'identifier' => ['required', 'string', 'max:255'],
+            'identifier' => $identifierRules,
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'identifier.indisposable' => __('validation.indisposable'),
         ];
     }
 }

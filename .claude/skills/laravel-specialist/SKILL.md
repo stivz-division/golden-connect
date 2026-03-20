@@ -72,11 +72,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domain\User\Models\User;use Illuminate\Database\Eloquent\Factories\HasFactory;use Illuminate\Database\Eloquent\Model;use Illuminate\Database\Eloquent\Relations\BelongsTo;use Illuminate\Database\Eloquent\Relations\HasMany;use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Post extends Model
 {
@@ -217,8 +213,7 @@ final class PublishPost implements ShouldQueue
 ```php
 <?php
 
-use App\Models\Post;
-use App\Models\User;
+use App\Domain\User\Models\User;use App\Models\Post;
 
 it('returns a published post for authenticated users', function (): void {
     $user = User::factory()->create();

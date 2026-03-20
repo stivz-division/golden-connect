@@ -5,9 +5,7 @@
 ```php
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\{User, Post};
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domain\User\Models\User;use App\Models\{Post};use Illuminate\Foundation\Testing\RefreshDatabase;use Tests\TestCase;
 
 class PostTest extends TestCase
 {
@@ -155,7 +153,7 @@ class PostServiceTest extends TestCase
 ```php
 <?php
 
-use App\Models\{User, Post};
+use App\Domain\User\Models\User;use App\Models\{Post};
 
 it('allows authenticated users to create posts', function () {
     $user = User::factory()->create();
@@ -221,8 +219,7 @@ afterEach(function () {
 ```php
 namespace Database\Factories;
 
-use App\Models\{User, Category};
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Domain\User\Models\User;use App\Models\{Category};use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostFactory extends Factory
 {
