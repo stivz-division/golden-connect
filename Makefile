@@ -159,13 +159,17 @@ optimize: ## Cache config, routes, views, events for production
 docker-dev: ## Start all services in dev mode (including mailpit)
 	$(COMPOSE) --profile dev up -d
 
+.PHONY: docker-dev-vite
+docker-dev-vite: ## Start all services in dev mode with Vite
+	$(COMPOSE) --profile dev --profile vite up -d
+
 .PHONY: docker-dev-build
 docker-dev-build: ## Rebuild dev containers
 	$(COMPOSE) up -d --build
 
 .PHONY: docker-dev-down
 docker-dev-down: ## Stop dev environment
-	$(COMPOSE) down
+	$(COMPOSE) --profile dev --profile vite down
 
 .PHONY: docker-dev-logs
 docker-dev-logs: ## Tail dev logs
