@@ -12,6 +12,7 @@ use App\Application\TelegramGateway\DTOs\VerificationStatusData;
 use App\Domain\TelegramGateway\Enums\DeliveryStatus;
 use App\Domain\TelegramGateway\Enums\VerificationStatus;
 use App\Domain\TelegramGateway\Exceptions\InvalidTokenException;
+use App\Domain\TelegramGateway\Exceptions\PhoneNumberNotAvailableException;
 use App\Domain\TelegramGateway\Exceptions\SendAbilityException;
 use App\Domain\TelegramGateway\Exceptions\TelegramGatewayException;
 use App\Domain\TelegramGateway\Exceptions\VerificationException;
@@ -151,6 +152,10 @@ class TelegramGatewayService implements TelegramGatewayInterface
 
         if ($httpStatus === 401) {
             throw new InvalidTokenException;
+        }
+
+        if (str_contains($errorMessage, 'PHONE_NUMBER_NOT_AVAILABLE')) {
+            throw new PhoneNumberNotAvailableException($errorMessage);
         }
 
         if (str_contains($errorMessage, 'SEND_ABILITY') || str_contains($errorMessage, 'send ability')) {

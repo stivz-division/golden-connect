@@ -6,6 +6,7 @@ use App\Application\User\Actions\LoginWithCodeAction;
 use App\Application\User\Actions\SendCodeAction;
 use App\Application\User\DTOs\LoginWithCodeData;
 use App\Application\User\DTOs\SendCodeData;
+use App\Domain\TelegramGateway\Exceptions\PhoneNumberNotAvailableException;
 use App\Domain\User\Enums\ContactType;
 use App\Domain\User\Exceptions\TooManyAttemptsException;
 use App\Domain\User\Exceptions\UserNotFoundException;
@@ -32,15 +33,19 @@ class LoginController extends Controller
 
     public function sendCode(SendCodeRequest $request): RedirectResponse
     {
-        $this->sendCode->execute(
-            new SendCodeData(
-                identifier: $request->validated('identifier'),
-                type: ContactType::from($request->validated('type')),
-                requiresExistingUser: true,
-            )
-        );
+        try {
+            $this->sendCode->execute(
+                new SendCodeData(
+                    identifier: $request->validated('identifier'),
+                    type: ContactType::from($request->validated('type')),
+                    requiresExistingUser: true,
+                )
+            );
 
-        return back()->with('success', __('auth.otp.code_sent'));
+            return back()->with('success', __('auth.otp.code_sent'));
+        } catch (PhoneNumberNotAvailableException) {
+            return back()->withErrors(['identifier' => __('auth.otp.phone_not_available')]);
+        }
     }
 
     public function login(LoginRequest $request): RedirectResponse
@@ -59,6 +64,8 @@ class LoginController extends Controller
             return redirect()->route('dashboard');
         } catch (VerificationCodeInvalidException) {
             return back()->withErrors(['code' => __('auth.otp.code_invalid')]);
+        } catch (PhoneNumberNotAvailableException) {
+            return back()->withErrors(['identifier' => __('auth.otp.phone_not_available')]);
         } catch (VerificationCodeExpiredException) {
             return back()->withErrors(['code' => __('auth.otp.code_expired')]);
         } catch (TooManyAttemptsException) {
