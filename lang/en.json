@@ -79,5 +79,6 @@
     "auth.otp.email_line": "Your verification code: :code",
     "auth.otp.email_warning": "If you did not request this code, please ignore this email.",
     "auth.otp.phone_not_available": "This phone number is not registered on Telegram",
-    "validation.indisposable": "Disposable email addresses are not allowed"
+    "validation.indisposable": "Disposable email addresses are not allowed",
+    "validation.identifier_already_registered": "A user with this identifier is already registered"
 }

@@ -24,6 +24,11 @@ class RegisterRequest extends FormRequest
         if ($this->input('type') === ContactType::Email->value) {
             $identifierRules[] = 'email';
             $identifierRules[] = 'indisposable';
+            $identifierRules[] = Rule::unique('users', 'email');
+        }
+
+        if ($this->input('type') === ContactType::Phone->value) {
+            $identifierRules[] = Rule::unique('users', 'phone');
         }
 
         return [
@@ -38,6 +43,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'identifier.indisposable' => __('validation.indisposable'),
+            'identifier.unique' => __('validation.identifier_already_registered'),
         ];
     }
 }

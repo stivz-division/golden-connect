@@ -79,5 +79,6 @@
     "auth.otp.email_line": "Ваш код подтверждения: :code",
     "auth.otp.email_warning": "Если вы не запрашивали этот код, просто проигнорируйте это письмо.",
     "auth.otp.phone_not_available": "Данный номер телефона не зарегистрирован в Telegram",
-    "validation.indisposable": "Использование временных email-адресов запрещено"
+    "validation.indisposable": "Использование временных email-адресов запрещено",
+    "validation.identifier_already_registered": "Пользователь с такими данными уже зарегистрирован"
 }
