@@ -1,45 +1,46 @@
 <script setup lang="ts">
 import { Head, useForm, Link, usePage } from '@inertiajs/vue3'
-import { UserCircle, User, Mail, Users, AlertTriangle } from 'lucide-vue-next'
+import { Phone, Mail, UserCircle, Users, AlertTriangle } from 'lucide-vue-next'
 import { useTranslations } from '@/Composables/useTranslations.js'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
-import AuthPasswordField from '@/Components/AuthPasswordField.vue'
 import logoNav from '@/../images/logo-nav.png'
-import { ref as vueRef, onMounted } from 'vue'
+import { ref as vueRef, computed, onMounted, onUnmounted } from 'vue'
 
 const { t } = useTranslations()
 const page = usePage()
 
-const refLogin = (page.props.ref as string | null) ?? null
-const mentorLogin = (page.props.mentorLogin as string | null) ?? null
+const refUuid = (page.props.ref as string | null) ?? null
+const mentorUuid = (page.props.mentorUuid as string | null) ?? null
 
-const mentorInfo = vueRef<{ name: string; surname: string; login: string } | null>(null)
+const mentorInfo = vueRef<{ uuid: string; name: string; surname: string } | null>(null)
 const mentorLoading = vueRef(false)
 const mentorError = vueRef(false)
 
+const activeTab = vueRef<'phone' | 'email'>('phone')
+const codeSent = vueRef(false)
+const countdown = vueRef(0)
+let timer: ReturnType<typeof setInterval> | null = null
+
 const form = useForm({
-    login: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    name: '',
-    surname: '',
-    ref: refLogin ?? '',
+    type: 'phone' as string,
+    identifier: '',
+    code: '',
+    ref: refUuid ?? '',
 })
 
 onMounted(async () => {
-    if (!mentorLogin) return
+    if (!mentorUuid) return
 
     mentorLoading.value = true
     try {
-        const response = await fetch(`/api/mentor/${encodeURIComponent(mentorLogin)}`)
+        const response = await fetch(`/api/mentor/${encodeURIComponent(mentorUuid)}`)
         if (response.ok) {
             mentorInfo.value = await response.json()
-        } else if (refLogin) {
+        } else if (refUuid) {
             mentorError.value = true
         }
     } catch {
-        if (refLogin) {
+        if (refUuid) {
             mentorError.value = true
         }
     } finally {
@@ -47,22 +48,60 @@ onMounted(async () => {
     }
 })
 
-const canSubmit = (): boolean => {
-    if (mentorError.value || mentorLoading.value) return false
-    return !form.processing
+const switchTab = (tab: 'phone' | 'email') => {
+    activeTab.value = tab
+    form.type = tab
+    form.identifier = ''
+    form.code = ''
+    form.clearErrors()
+    codeSent.value = false
+}
+
+const startCountdown = () => {
+    countdown.value = 60
+    timer = setInterval(() => {
+        countdown.value--
+        if (countdown.value <= 0 && timer) {
+            clearInterval(timer)
+            timer = null
+        }
+    }, 1000)
+}
+
+const sendCode = () => {
+    form.post(route('register.send-code'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            codeSent.value = true
+            startCountdown()
+        },
+    })
 }
 
 const submit = () => {
     form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
+        onFinish: () => form.reset('code'),
     })
 }
+
+const canSendCode = computed(() => {
+    return form.identifier.length > 0 && !form.processing && countdown.value === 0
+})
+
+const canSubmit = computed(() => {
+    if (mentorError.value || mentorLoading.value) return false
+    return !form.processing && form.code.length === 6
+})
+
+onUnmounted(() => {
+    if (timer) clearInterval(timer)
+})
 </script>
 
 <template>
     <Head :title="t('auth.registerButton')" />
 
-    <AuthLayout wide>
+    <AuthLayout>
         <div class="auth-card">
             <div class="auth-logo">
                 <img :src="logoNav" alt="Golden Connect" />
@@ -73,11 +112,11 @@ const submit = () => {
                     <UserCircle :size="24" />
                 </div>
                 <h1 class="auth-title">{{ t('auth.welcome') }}</h1>
-                <p class="auth-subtitle">{{ t('auth.registerSubtitle') }}</p>
+                <p class="auth-subtitle">{{ t('auth.otp.registerSubtitle') }}</p>
             </div>
 
             <!-- Mentor loading -->
-            <div v-if="mentorLogin && mentorLoading" class="mentor-card mentor-card--loading">
+            <div v-if="mentorUuid && mentorLoading" class="mentor-card mentor-card--loading">
                 <div class="mentor-card__icon">
                     <Users :size="20" />
                 </div>
@@ -95,12 +134,11 @@ const submit = () => {
                 <div class="mentor-card__info">
                     <span class="mentor-card__label">{{ t('auth.yourMentor') }}</span>
                     <span class="mentor-card__name">{{ mentorInfo.name }} {{ mentorInfo.surname }}</span>
-                    <span class="mentor-card__login">@{{ mentorInfo.login }}</span>
                 </div>
             </div>
 
-            <!-- Mentor not found — block registration (only when ref was explicitly provided) -->
-            <div v-if="refLogin && mentorError && !mentorLoading" class="mentor-error">
+            <!-- Mentor not found -->
+            <div v-if="refUuid && mentorError && !mentorLoading" class="mentor-error">
                 <div class="mentor-error__icon">
                     <AlertTriangle :size="24" />
                 </div>
@@ -108,108 +146,92 @@ const submit = () => {
                 <p class="mentor-error__message">{{ t('auth.mentorNotFoundMessage') }}</p>
             </div>
 
-            <form v-if="!mentorError" class="auth-form" @submit.prevent="submit">
-                <div class="auth-field">
-                    <label class="auth-label" for="login">{{ t('auth.login') }}</label>
-                    <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">
-                            <User :size="16" />
-                        </span>
-                        <input
-                            id="login"
-                            v-model="form.login"
-                            type="text"
-                            class="auth-input has-icon"
-                            :class="{ error: form.errors.login }"
-                            :placeholder="t('placeholder.enterLogin')"
-                            autocomplete="username"
-                        />
-                    </div>
-                    <p v-if="form.errors.login" class="auth-error">
-                        {{ form.errors.login }}
-                    </p>
+            <template v-if="!mentorError">
+                <div class="auth-tabs">
+                    <button
+                        type="button"
+                        class="auth-tab"
+                        :class="{ 'auth-tab--active': activeTab === 'phone' }"
+                        @click="switchTab('phone')"
+                    >
+                        <Phone :size="16" />
+                        {{ t('auth.otp.phone') }}
+                    </button>
+                    <button
+                        type="button"
+                        class="auth-tab"
+                        :class="{ 'auth-tab--active': activeTab === 'email' }"
+                        @click="switchTab('email')"
+                    >
+                        <Mail :size="16" />
+                        {{ t('auth.otp.email') }}
+                    </button>
                 </div>
 
-                <div class="auth-field">
-                    <label class="auth-label" for="email">{{ t('auth.email') }}</label>
-                    <div class="auth-input-wrapper">
-                        <span class="auth-input-icon">
-                            <Mail :size="16" />
-                        </span>
-                        <input
-                            id="email"
-                            v-model="form.email"
-                            type="email"
-                            class="auth-input has-icon"
-                            :class="{ error: form.errors.email }"
-                            :placeholder="t('placeholder.enterEmail')"
-                            autocomplete="email"
-                        />
-                    </div>
-                    <p v-if="form.errors.email" class="auth-error">
-                        {{ form.errors.email }}
-                    </p>
-                </div>
-
-                <AuthPasswordField
-                    id="password"
-                    v-model="form.password"
-                    :label="t('auth.password')"
-                    :placeholder="t('placeholder.enterPassword')"
-                    :error="form.errors.password"
-                />
-
-                <AuthPasswordField
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    :label="t('auth.confirmPassword')"
-                    :placeholder="t('placeholder.repeatPassword')"
-                    :error="form.errors.password_confirmation"
-                />
-
-                <div class="auth-name-row">
+                <form class="auth-form" @submit.prevent="submit">
                     <div class="auth-field">
-                        <label class="auth-label" for="name">{{ t('auth.firstName') }}</label>
-                        <input
-                            id="name"
-                            v-model="form.name"
-                            type="text"
-                            class="auth-input"
-                            :class="{ error: form.errors.name }"
-                            :placeholder="t('placeholder.enterFirstName')"
-                            autocomplete="given-name"
-                        />
-                        <p v-if="form.errors.name" class="auth-error">
-                            {{ form.errors.name }}
+                        <label class="auth-label" for="identifier">
+                            {{ activeTab === 'phone' ? t('auth.otp.phoneLabel') : t('auth.otp.emailLabel') }}
+                        </label>
+                        <div class="auth-input-wrapper">
+                            <span class="auth-input-icon">
+                                <component :is="activeTab === 'phone' ? Phone : Mail" :size="16" />
+                            </span>
+                            <input
+                                id="identifier"
+                                v-model="form.identifier"
+                                :type="activeTab === 'phone' ? 'tel' : 'email'"
+                                class="auth-input has-icon"
+                                :class="{ error: form.errors.identifier }"
+                                :placeholder="activeTab === 'phone' ? t('auth.otp.phonePlaceholder') : t('auth.otp.emailPlaceholder')"
+                            />
+                        </div>
+                        <p v-if="form.errors.identifier" class="auth-error">
+                            {{ form.errors.identifier }}
                         </p>
                     </div>
-                    <div class="auth-field">
-                        <label class="auth-label" for="surname">{{ t('auth.lastName') }}</label>
+
+                    <div class="auth-field auth-code-row">
+                        <button
+                            type="button"
+                            class="auth-send-code"
+                            :disabled="!canSendCode"
+                            @click="sendCode"
+                        >
+                            {{ countdown > 0 ? t('auth.otp.resendIn', { seconds: countdown }) : t('auth.otp.sendCode') }}
+                        </button>
+                    </div>
+
+                    <div v-if="codeSent" class="auth-field">
+                        <label class="auth-label" for="code">{{ t('auth.otp.codeLabel') }}</label>
                         <input
-                            id="surname"
-                            v-model="form.surname"
+                            id="code"
+                            v-model="form.code"
                             type="text"
-                            class="auth-input"
-                            :class="{ error: form.errors.surname }"
-                            :placeholder="t('placeholder.enterLastName')"
-                            autocomplete="family-name"
+                            inputmode="numeric"
+                            maxlength="6"
+                            class="auth-input auth-input--code"
+                            :class="{ error: form.errors.code }"
+                            :placeholder="t('auth.otp.codePlaceholder')"
+                            autocomplete="one-time-code"
                         />
-                        <p v-if="form.errors.surname" class="auth-error">
-                            {{ form.errors.surname }}
+                        <p v-if="form.errors.code" class="auth-error">
+                            {{ form.errors.code }}
                         </p>
                     </div>
-                </div>
 
-                <input type="hidden" name="ref" :value="form.ref" />
+                    <input type="hidden" name="ref" :value="form.ref" />
 
-                <button
-                    type="submit"
-                    class="auth-submit"
-                    :disabled="!canSubmit()"
-                >
-                    {{ t('auth.registerButton') }}
-                </button>
-            </form>
+                    <button
+                        v-if="codeSent"
+                        type="submit"
+                        class="auth-submit"
+                        :disabled="!canSubmit"
+                    >
+                        {{ t('auth.registerButton') }}
+                    </button>
+                </form>
+            </template>
 
             <div v-if="!mentorError" class="auth-footer">
                 <p class="auth-footer-text">

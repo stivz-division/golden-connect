@@ -515,6 +515,93 @@
   .mentor-error__message { font-size: 0.8125rem; }
 }
 
+/* Tabs */
+
+.auth-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background: rgba(13, 11, 26, 0.4);
+  border-radius: 10px;
+  padding: 0.25rem;
+}
+
+.auth-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--color-gray-400);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.auth-tab:hover {
+  color: var(--color-gray-300);
+}
+
+.auth-tab--active {
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: var(--color-white);
+}
+
+@media (max-width: 640px) {
+  .auth-tabs { margin-bottom: 1.25rem; }
+  .auth-tab { font-size: 0.8125rem; padding: 0.5rem 0.75rem; }
+}
+
+/* Send Code Button */
+
+.auth-send-code {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: var(--radius-button);
+  color: var(--color-violet);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.auth-send-code:hover:not(:disabled) {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.auth-send-code:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .auth-send-code { font-size: 0.8125rem; padding: 0.625rem 1rem; }
+}
+
+/* Code Input */
+
+.auth-input--code {
+  text-align: center;
+  letter-spacing: 0.5em;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .auth-input--code { font-size: 1.125rem; }
+}
+
 /* Info Block */
 
 .auth-info {

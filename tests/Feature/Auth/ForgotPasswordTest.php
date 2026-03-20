@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Domain\User\Models\User;
 use App\Notifications\Auth\ResetPasswordNotification;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
