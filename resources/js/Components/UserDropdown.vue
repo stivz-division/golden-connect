@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
-import { ChevronDown, LogOut } from 'lucide-vue-next';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { ChevronDown, LogOut, Share2 } from 'lucide-vue-next';
 import { useTranslations } from '@/Composables/useTranslations';
 
 const { t } = useTranslations();
@@ -58,6 +58,14 @@ onUnmounted(() => {
 
         <Transition name="dropdown">
             <div v-if="isOpen" class="user-dropdown__menu">
+                <Link
+                    :href="route('invite')"
+                    class="user-dropdown__item"
+                    @click="isOpen = false"
+                >
+                    <Share2 :size="20" class="user-dropdown__item-icon--gold" />
+                    <span>{{ t('nav.invite') }}</span>
+                </Link>
                 <button
                     class="user-dropdown__item user-dropdown__item--danger"
                     @click="logout"

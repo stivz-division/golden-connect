@@ -38,6 +38,13 @@ return [
     | HTTP error response format options
     |--------------------------------------------------------------------------
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Telegram Mini Apps URL
+    |--------------------------------------------------------------------------
+    */
+    'mini_apps_url' => env('TELEGRAM_MINI_APPS_URL', ''),
+
     'error' => [
         // HTTP status code when Telegram MiniApp data validation fails
         'status' => 403,

@@ -7,6 +7,7 @@ use App\Application\User\DTOs\TelegramAuthData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\TelegramAuthRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Micromagicman\TelegramWebApp\Service\TelegramWebAppService;
@@ -46,6 +47,14 @@ class TelegramAuthController extends Controller
         }
 
         session()->put('telegram_linked', true);
+
+        $ref = $request->query('start_param', '');
+
+        if ($ref && Str::isUuid($ref)) {
+            session(['referral_ref' => $ref]);
+
+            return redirect()->route('register', ['ref' => $ref]);
+        }
 
         return redirect()->route('register');
     }

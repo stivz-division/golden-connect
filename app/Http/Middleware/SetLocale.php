@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
@@ -32,6 +33,12 @@ class SetLocale
             app()->setLocale(config('locales.default', 'ru'));
 
             return $next($request);
+        }
+
+        $ref = $request->query('ref');
+
+        if ($ref && Str::isUuid($ref)) {
+            session(['referral_ref' => $ref]);
         }
 
         return redirect()->route('locale.index');

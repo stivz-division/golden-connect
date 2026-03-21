@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLocaleRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -50,6 +51,12 @@ class LocaleController extends Controller
 
         if ($request->user()) {
             $request->user()->update(['language' => $locale]);
+        }
+
+        $ref = session()->pull('referral_ref');
+
+        if ($ref && Str::isUuid($ref)) {
+            return redirect()->route('register', ['ref' => $ref]);
         }
 
         if (session()->has('telegram_auth')) {

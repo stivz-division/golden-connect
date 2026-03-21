@@ -1,0 +1,565 @@
+/* Back Button */
+.invite-back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    transition: color 0.3s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+@media (min-width: 640px) {
+    .invite-back-button {
+        margin-bottom: 1.5rem;
+    }
+}
+
+.invite-back-button:hover {
+    color: white;
+}
+
+/* Title Container */
+.invite-title-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .invite-title-container {
+        margin-bottom: 2rem;
+    }
+}
+
+.invite-title-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #F5C542, #FFB800);
+    flex-shrink: 0;
+}
+
+.invite-title-icon svg {
+    color: black;
+}
+
+.invite-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+}
+
+@media (min-width: 640px) {
+    .invite-title {
+        font-size: 1.5rem;
+    }
+}
+
+.invite-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+@media (min-width: 640px) {
+    .invite-subtitle {
+        font-size: 0.875rem;
+    }
+}
+
+/* Stats Grid */
+.invite-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .invite-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        margin-bottom: 2rem;
+    }
+}
+
+.invite-stat-card {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    padding: 1rem;
+    background: rgba(45, 33, 80, 0.6);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.invite-stat-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.invite-stat-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: white;
+}
+
+@media (min-width: 640px) {
+    .invite-stat-value {
+        font-size: 1.25rem;
+    }
+}
+
+.invite-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Link Card */
+.invite-link-card {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: rgba(45, 33, 80, 0.6);
+    border: 1px solid rgba(245, 197, 66, 0.3);
+}
+
+@media (min-width: 640px) {
+    .invite-link-card {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+}
+
+.invite-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+@media (min-width: 640px) {
+    .invite-card-title {
+        font-size: 1.125rem;
+    }
+}
+
+.invite-card-description {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1rem;
+}
+
+/* Link Section */
+.invite-link-section {
+    margin-bottom: 1rem;
+}
+
+.invite-link-section--bordered {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 640px) {
+    .invite-link-section--bordered {
+        padding-bottom: 1.5rem;
+    }
+}
+
+.invite-link-label-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.invite-link-label {
+    font-size: 0.625rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+@media (min-width: 640px) {
+    .invite-link-label {
+        font-size: 0.75rem;
+    }
+}
+
+.invite-link-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.invite-link-badge--web {
+    background: rgba(245, 197, 66, 0.15);
+    color: #FFD700;
+}
+
+.invite-link-badge--tg {
+    background: rgba(0, 136, 204, 0.15);
+    color: #0088cc;
+}
+
+/* Link Input Group */
+.invite-link-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 480px) {
+    .invite-link-input-group {
+        flex-direction: row;
+    }
+}
+
+.invite-link-input {
+    width: 100%;
+    min-width: 0;
+    font-size: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(245, 197, 66, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Courier New', monospace;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 640px) {
+    .invite-link-input {
+        font-size: 0.8125rem;
+        padding: 0.75rem 1rem;
+        flex: 1;
+    }
+}
+
+.invite-link-input:focus {
+    outline: none;
+    border-color: rgba(245, 197, 66, 0.5);
+}
+
+.invite-copy-button {
+    flex-shrink: 0;
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #F5C542, #FFB800);
+    color: black;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .invite-copy-button {
+        padding: 0.75rem 1rem;
+    }
+}
+
+.invite-copy-button:hover {
+    transform: scale(1.05);
+}
+
+/* QR Toggle */
+.invite-qr-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border: 1px solid;
+    background: none;
+}
+
+@media (min-width: 640px) {
+    .invite-qr-toggle {
+        font-size: 0.8125rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+.invite-qr-toggle--web {
+    background: rgba(245, 197, 66, 0.1);
+    border-color: rgba(245, 197, 66, 0.2);
+    color: #FFD700;
+}
+
+.invite-qr-toggle--web:hover {
+    background: rgba(245, 197, 66, 0.18);
+}
+
+.invite-qr-toggle--tg {
+    background: rgba(0, 136, 204, 0.1);
+    border-color: rgba(0, 136, 204, 0.2);
+    color: #0088cc;
+}
+
+.invite-qr-toggle--tg:hover {
+    background: rgba(0, 136, 204, 0.18);
+}
+
+/* QR Container */
+.invite-qr-container {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.invite-qr-image {
+    border-radius: 0.5rem;
+    max-width: 150px;
+}
+
+.invite-qr-text {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+/* Code Label */
+.invite-code-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.25);
+    margin-top: 1rem;
+}
+
+.invite-code-value {
+    font-family: 'Courier New', monospace;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* How it Works Card */
+.invite-how-works-card {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: rgba(45, 33, 80, 0.6);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+@media (min-width: 640px) {
+    .invite-how-works-card {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+}
+
+.invite-how-works-desc {
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+/* Steps */
+.invite-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.invite-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.invite-step-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.invite-step-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.invite-step-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.125rem;
+}
+
+.invite-step-desc {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.4;
+}
+
+/* Levels */
+.invite-levels-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.75rem;
+}
+
+.invite-levels-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.invite-level-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.invite-level-badge {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #A855F7, #7C3AED);
+    color: white;
+}
+
+.invite-level-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.invite-level-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: white;
+}
+
+.invite-level-description {
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 0.0625rem;
+}
+
+/* Notes */
+.invite-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(245, 197, 66, 0.08);
+    border: 1px solid rgba(245, 197, 66, 0.2);
+    margin-bottom: 0.75rem;
+}
+
+.invite-note--subtle {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.invite-note-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    color: rgba(245, 197, 66, 0.7);
+    margin-top: 0.125rem;
+}
+
+.invite-note--subtle .invite-note-icon {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.invite-note-text {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+}
+
+/* Team Button */
+.invite-team-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.invite-team-button:hover {
+    transform: scale(1.01);
+}
+
+.invite-team-button__content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.invite-team-button__content span {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.invite-team-button__chevron {
+    color: rgba(255, 255, 255, 0.4);
+}

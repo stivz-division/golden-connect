@@ -3,19 +3,18 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\TelegramAuthController;
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Invite\InviteController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Micromagicman\TelegramWebApp\Http\WebAppDataValidationMiddleware;
 
 Route::get('/language', [LocaleController::class, 'index'])->name('locale.index');
 Route::patch('/locale', [LocaleController::class, 'update'])->name('locale.update');
 Route::post('/locale', [LocaleController::class, 'store'])->name('locale.store');
 
-Route::get('/', static function () {
-    return Inertia::render('Welcome');
-});
+Route::redirect('/', '/dashboard');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -35,7 +34,6 @@ Route::prefix('telegram')->withoutMiddleware([SetLocale::class])->group(function
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', static function () {
-        return Inertia::render('Dashboard/Index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/invite', [InviteController::class, 'index'])->name('invite');
 });
