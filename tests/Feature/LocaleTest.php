@@ -8,10 +8,10 @@ it('redirects guest without locale to language selection', function () {
     $response->assertRedirect(route('locale.index'));
 });
 
-it('does not redirect guest with locale in session', function () {
+it('redirects guest with locale to dashboard', function () {
     $response = $this->withSession(['locale' => 'ru'])->get('/');
 
-    $response->assertStatus(200);
+    $response->assertRedirect('/dashboard');
 });
 
 it('updates session locale on valid POST', function () {
