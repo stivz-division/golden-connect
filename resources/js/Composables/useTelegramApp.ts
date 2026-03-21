@@ -7,31 +7,45 @@ import {
     closingBehavior,
     themeParams,
 } from '@telegram-apps/sdk'
-import { postEvent } from '@telegram-apps/bridge'
+import { postEvent, retrieveRawInitData } from '@telegram-apps/bridge'
 
 const initialized = ref(false)
 let cleanup: VoidFunction | null = null
+
+function isTelegramEnv(): boolean {
+    try {
+        return !!retrieveRawInitData()
+    } catch {
+        return false
+    }
+}
 
 export function useTelegramApp() {
     /**
      * Инициализирует SDK и монтирует необходимые компоненты.
      * Вызывать один раз при старте приложения.
      */
-    function initialize() {
-        if (initialized.value) return
+    function initialize(): boolean {
+        if (initialized.value) return true
 
-        cleanup = init()
-        initialized.value = true
+        if (!isTelegramEnv()) return false
+
+        try {
+            cleanup = init()
+            initialized.value = true
+            return true
+        } catch {
+            return false
+        }
     }
 
     /**
      * Монтирует miniApp, viewport и вспомогательные компоненты,
      * затем переводит приложение в fullscreen.
+     * Безопасно вызывать вне Telegram — ничего не произойдёт.
      */
     async function setupFullscreen() {
-        if (!initialized.value) {
-            initialize()
-        }
+        if (!initialize()) return
 
         // 1. Монтируем miniApp
         if (miniApp.mountSync.isAvailable()) {

@@ -25,6 +25,11 @@
 Проект поддерживает два языка русский и английский.
 Нужно не забывать поддерживать локализацию
 
+## Telegram Mini App (Safe Area)
+При работе с frontend учитывать safe area insets для корректного отображения в fullscreen режиме Telegram Mini Apps.
+Использовать CSS-переменные: `--tg-viewport-safe-area-inset-*` и `--tg-viewport-content-safe-area-inset-*` с fallback `0px`.
+Утилитарный класс `.tg-safe-area` в `app.css`, в `auth.css` уже учтено.
+
 ## Настраиваемые переменные
 - nova_get_setting
 
