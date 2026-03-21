@@ -39,8 +39,8 @@ function authenticate() {
     })
 }
 
-onMounted(async () => {
-    await setupFullscreen()
+onMounted(() => {
+    setupFullscreen()
     authenticate()
 })
 </script>
