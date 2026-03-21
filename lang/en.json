@@ -89,5 +89,11 @@
     "telegram.open_in_telegram": "Please open this page from Telegram",
     "validation.phone_invalid_format": "Invalid phone number format. Please use international format, e.g.: +79991234567",
     "validation.recaptcha_failed": "Security check failed. Please try again.",
-    "validation.recaptcha_unavailable": "Security verification service is unavailable. Please try again later."
+    "validation.recaptcha_unavailable": "Security verification service is unavailable. Please try again later.",
+    "dashboard.welcome": "Welcome",
+    "dashboard.subtitle": "Manage your investments and track your income",
+    "nav.profile": "Profile",
+    "nav.settings": "Settings",
+    "nav.invite": "Invite",
+    "nav.logout": "Log out"
 }

@@ -89,5 +89,11 @@
     "telegram.open_in_telegram": "Откройте эту страницу из Telegram",
     "validation.phone_invalid_format": "Неверный формат номера телефона. Укажите номер в международном формате, например: +79991234567",
     "validation.recaptcha_failed": "Проверка безопасности не пройдена. Попробуйте ещё раз.",
-    "validation.recaptcha_unavailable": "Сервис проверки безопасности недоступен. Попробуйте позже."
+    "validation.recaptcha_unavailable": "Сервис проверки безопасности недоступен. Попробуйте позже.",
+    "dashboard.welcome": "Добро пожаловать",
+    "dashboard.subtitle": "Управляйте вашими инвестициями и отслеживайте доходы",
+    "nav.profile": "Профиль",
+    "nav.settings": "Настройки",
+    "nav.invite": "Пригласить",
+    "nav.logout": "Выйти"
 }
