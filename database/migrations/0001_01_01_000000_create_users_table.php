@@ -21,6 +21,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('language');
+            $table->bigInteger('telegram_chat_id')->nullable()->unique()->index();
+
             $table->rememberToken();
             $table->timestamps();
 

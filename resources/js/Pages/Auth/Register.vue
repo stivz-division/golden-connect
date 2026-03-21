@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, useForm, Link, usePage } from '@inertiajs/vue3'
-import { Phone, Mail, UserCircle, Users, AlertTriangle } from 'lucide-vue-next'
+import { Phone, Mail, UserCircle, Users, AlertTriangle, Send } from 'lucide-vue-next'
 import { useTranslations } from '@/Composables/useTranslations.js'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import logoNav from '@/../images/logo-nav.png'
@@ -11,6 +11,7 @@ const page = usePage()
 
 const refUuid = (page.props.ref as string | null) ?? null
 const mentorUuid = (page.props.mentorUuid as string | null) ?? null
+const telegramLinked = (page.props.telegramLinked as boolean) ?? false
 
 const mentorInfo = vueRef<{ uuid: string; name: string; surname: string } | null>(null)
 const mentorLoading = vueRef(false)
@@ -113,6 +114,14 @@ onUnmounted(() => {
                 </div>
                 <h1 class="auth-title">{{ t('auth.welcome') }}</h1>
                 <p class="auth-subtitle">{{ t('auth.otp.registerSubtitle') }}</p>
+            </div>
+
+            <!-- Telegram linked info -->
+            <div v-if="telegramLinked" class="telegram-info">
+                <div class="telegram-info__icon">
+                    <Send :size="20" />
+                </div>
+                <p class="telegram-info__text">{{ t('telegram.linked_info') }}</p>
             </div>
 
             <!-- Mentor loading -->
@@ -249,3 +258,28 @@ onUnmounted(() => {
         </div>
     </AuthLayout>
 </template>
+
+<style scoped>
+.telegram-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(0, 136, 204, 0.1);
+    border: 1px solid rgba(0, 136, 204, 0.2);
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.telegram-info__icon {
+    color: #0088cc;
+    flex-shrink: 0;
+}
+
+.telegram-info__text {
+    color: #0088cc;
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 0;
+}
+</style>

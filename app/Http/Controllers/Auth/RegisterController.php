@@ -20,6 +20,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 
 class RegisterController extends Controller
 {
@@ -36,6 +37,7 @@ class RegisterController extends Controller
         return Inertia::render('Auth/Register', [
             'ref' => $ref,
             'mentorUuid' => $mentorUuid,
+            'telegramLinked' => session('telegram_linked', false),
         ]);
     }
 
@@ -52,6 +54,8 @@ class RegisterController extends Controller
             return back()->with('success', __('auth.otp.code_sent'));
         } catch (PhoneNumberNotAvailableException) {
             return back()->withErrors(['identifier' => __('auth.otp.phone_not_available')]);
+        } catch (InvalidArgumentException) {
+            return back()->withErrors(['identifier' => __('validation.phone_invalid_format')]);
         }
     }
 

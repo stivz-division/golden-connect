@@ -80,5 +80,12 @@
     "auth.otp.email_warning": "Если вы не запрашивали этот код, просто проигнорируйте это письмо.",
     "auth.otp.phone_not_available": "Данный номер телефона не зарегистрирован в Telegram",
     "validation.indisposable": "Использование временных email-адресов запрещено",
-    "validation.identifier_already_registered": "Пользователь с такими данными уже зарегистрирован"
+    "validation.identifier_already_registered": "Пользователь с такими данными уже зарегистрирован",
+    "telegram.loading": "Загрузка Telegram...",
+    "telegram.auth_error": "Ошибка авторизации через Telegram",
+    "telegram.retry": "Повторить",
+    "telegram.linked_info": "После регистрации ваш Telegram будет автоматически привязан к аккаунту",
+    "telegram.invalid_data": "Невалидные данные Telegram",
+    "telegram.open_in_telegram": "Откройте эту страницу из Telegram",
+    "validation.phone_invalid_format": "Неверный формат номера телефона. Укажите номер в международном формате, например: +79991234567"
 }

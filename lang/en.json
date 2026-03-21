@@ -80,5 +80,12 @@
     "auth.otp.email_warning": "If you did not request this code, please ignore this email.",
     "auth.otp.phone_not_available": "This phone number is not registered on Telegram",
     "validation.indisposable": "Disposable email addresses are not allowed",
-    "validation.identifier_already_registered": "A user with this identifier is already registered"
+    "validation.identifier_already_registered": "A user with this identifier is already registered",
+    "telegram.loading": "Loading Telegram...",
+    "telegram.auth_error": "Telegram authorization error",
+    "telegram.retry": "Retry",
+    "telegram.linked_info": "After registration your Telegram will be automatically linked to your account",
+    "telegram.invalid_data": "Invalid Telegram data",
+    "telegram.open_in_telegram": "Please open this page from Telegram",
+    "validation.phone_invalid_format": "Invalid phone number format. Please use international format, e.g.: +79991234567"
 }

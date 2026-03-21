@@ -15,6 +15,7 @@ class RegisterWithCodeAction
 {
     public function __construct(
         private readonly VerifyCodeAction $verifyCode,
+        private readonly LinkTelegramAction $linkTelegram,
     ) {}
 
     public function execute(RegisterWithCodeData $data): User
@@ -54,6 +55,8 @@ class RegisterWithCodeAction
 
             return $user;
         });
+
+        $this->linkTelegram->execute($user);
 
         Auth::login($user, remember: true);
 

@@ -18,6 +18,7 @@ use App\Http\Requests\Auth\SendCodeRequest;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 
 class LoginController extends Controller
 {
@@ -45,6 +46,8 @@ class LoginController extends Controller
             return back()->with('success', __('auth.otp.code_sent'));
         } catch (PhoneNumberNotAvailableException) {
             return back()->withErrors(['identifier' => __('auth.otp.phone_not_available')]);
+        } catch (InvalidArgumentException) {
+            return back()->withErrors(['identifier' => __('validation.phone_invalid_format')]);
         }
     }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "509c3028ea6325ceb6661666f6b7c8ab",
+    "content-hash": "26b50507049191daa79cae9f411b9dda",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2991,6 +2991,75 @@
                 }
             ],
             "time": "2026-03-08T20:05:35+00:00"
+        },
+        {
+            "name": "micromagicman/laravel-telegram-webapp",
+            "version": "v4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/micromagicman/laravel-telegram-webapp.git",
+                "reference": "070ca0b2818a881ad22dfbe6934082c067d70039"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/micromagicman/laravel-telegram-webapp/zipball/070ca0b2818a881ad22dfbe6934082c067d70039",
+                "reference": "070ca0b2818a881ad22dfbe6934082c067d70039",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/routing": "^12.0",
+                "illuminate/support": "^12.0",
+                "php": ">=8.3",
+                "telegram-bot/api": "^2.5"
+            },
+            "require-dev": {
+                "ext-dom": "*",
+                "nunomaduro/collision": "^8.0",
+                "orchestra/testbench": "^10.0.0",
+                "phpunit/php-code-coverage": "^12.0",
+                "phpunit/phpunit": "^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "TelegramWebApp": "Micromagicman\\TelegramWebApp\\Facade\\TelegramFacade"
+                    },
+                    "providers": [
+                        "Micromagicman\\TelegramWebApp\\TelegramWebAppServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Micromagicman\\TelegramWebApp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "micromagicman",
+                    "email": "evgen@micromagicman.ru"
+                }
+            ],
+            "description": "Laravel middleware for Telegram WebApp data validation",
+            "keywords": [
+                "bot",
+                "laravel",
+                "miniapp",
+                "telegram"
+            ],
+            "support": {
+                "issues": "https://github.com/micromagicman/laravel-telegram-webapp/issues",
+                "source": "https://github.com/micromagicman/laravel-telegram-webapp/tree/v4.0.0"
+            },
+            "time": "2025-04-09T05:17:44+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -8304,6 +8373,67 @@
                 }
             ],
             "time": "2026-02-15T10:53:20+00:00"
+        },
+        {
+            "name": "telegram-bot/api",
+            "version": "v2.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TelegramBot/Api.git",
+                "reference": "eaae3526223db49a1bad76a2dfa501dc287979cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TelegramBot/Api/zipball/eaae3526223db49a1bad76a2dfa501dc287979cf",
+                "reference": "eaae3526223db49a1bad76a2dfa501dc287979cf",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.16",
+                "symfony/phpunit-bridge": "*",
+                "vimeo/psalm": "^5.9"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TelegramBot\\Api\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ilya Gusev",
+                    "email": "mail@igusev.ru",
+                    "homepage": "https://php-cat.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP Wrapper for Telegram Bot API",
+            "homepage": "https://github.com/TelegramBot/Api",
+            "keywords": [
+                "bot",
+                "bot api",
+                "php",
+                "telegram"
+            ],
+            "support": {
+                "issues": "https://github.com/TelegramBot/Api/issues",
+                "source": "https://github.com/TelegramBot/Api/tree/v2.5.0"
+            },
+            "time": "2023-08-09T13:53:12+00:00"
         },
         {
             "name": "tightenco/ziggy",

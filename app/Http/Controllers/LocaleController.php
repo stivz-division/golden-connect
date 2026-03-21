@@ -48,6 +48,10 @@ class LocaleController extends Controller
             $request->user()->update(['language' => $locale]);
         }
 
+        if (session()->has('telegram_auth')) {
+            return redirect()->route('register');
+        }
+
         return redirect()->route('login');
     }
 }
