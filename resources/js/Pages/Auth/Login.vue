@@ -2,16 +2,19 @@
 import { Head, useForm, Link, usePage } from '@inertiajs/vue3'
 import { Phone, Mail, User } from 'lucide-vue-next'
 import { useTranslations } from '@/Composables/useTranslations.js'
+import { useRecaptcha } from '@/Composables/useRecaptcha'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import logoNav from '@/../images/logo-nav.png'
 import { ref, computed, onUnmounted } from 'vue'
 
 const { t } = useTranslations()
 const page = usePage()
+const { execute: executeRecaptcha } = useRecaptcha()
 
 const activeTab = ref<'phone' | 'email'>('phone')
 const codeSent = ref(false)
 const countdown = ref(0)
+const sendingCode = ref(false)
 let timer: ReturnType<typeof setInterval> | null = null
 
 const form = useForm({
@@ -40,12 +43,27 @@ const startCountdown = () => {
     }, 1000)
 }
 
-const sendCode = () => {
-    form.post(route('login.send-code'), {
+const sendCode = async () => {
+    sendingCode.value = true
+
+    let recaptchaToken: string | null = null
+    try {
+        recaptchaToken = await executeRecaptcha('send_code')
+    } catch {
+        // Отправляем без токена — бэкенд вернёт ошибку валидации
+    }
+
+    form.transform((data) => ({
+        ...data,
+        ...(recaptchaToken ? { recaptcha_token: recaptchaToken } : {}),
+    })).post(route('login.send-code'), {
         preserveScroll: true,
         onSuccess: () => {
             codeSent.value = true
             startCountdown()
+        },
+        onFinish: () => {
+            sendingCode.value = false
         },
     })
 }
@@ -57,7 +75,7 @@ const submit = () => {
 }
 
 const canSendCode = computed(() => {
-    return form.identifier.length > 0 && !form.processing && countdown.value === 0
+    return form.identifier.length > 0 && !form.processing && !sendingCode.value && countdown.value === 0
 })
 
 onUnmounted(() => {
@@ -125,6 +143,10 @@ onUnmounted(() => {
                         {{ form.errors.identifier }}
                     </p>
                 </div>
+
+                <p v-if="form.errors.recaptcha_token" class="auth-error">
+                    {{ form.errors.recaptcha_token }}
+                </p>
 
                 <div class="auth-field auth-code-row">
                     <button

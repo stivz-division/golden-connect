@@ -57,6 +57,7 @@ class HandleInertiaRequests extends Middleware
             'locales' => $locales,
             'translations' => $translations,
             'status' => fn () => $request->session()->get('status'),
+            'recaptchaSiteKey' => config('services.recaptcha.site_key'),
         ];
     }
 }

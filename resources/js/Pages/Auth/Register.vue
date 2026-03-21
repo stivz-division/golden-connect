@@ -2,12 +2,14 @@
 import { Head, useForm, Link, usePage } from '@inertiajs/vue3'
 import { Phone, Mail, UserCircle, Users, AlertTriangle, Send } from 'lucide-vue-next'
 import { useTranslations } from '@/Composables/useTranslations.js'
+import { useRecaptcha } from '@/Composables/useRecaptcha'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import logoNav from '@/../images/logo-nav.png'
 import { ref as vueRef, computed, onMounted, onUnmounted } from 'vue'
 
 const { t } = useTranslations()
 const page = usePage()
+const { execute: executeRecaptcha } = useRecaptcha()
 
 const refUuid = (page.props.ref as string | null) ?? null
 const mentorUuid = (page.props.mentorUuid as string | null) ?? null
@@ -20,6 +22,7 @@ const mentorError = vueRef(false)
 const activeTab = vueRef<'phone' | 'email'>('phone')
 const codeSent = vueRef(false)
 const countdown = vueRef(0)
+const sendingCode = vueRef(false)
 let timer: ReturnType<typeof setInterval> | null = null
 
 const form = useForm({
@@ -69,12 +72,27 @@ const startCountdown = () => {
     }, 1000)
 }
 
-const sendCode = () => {
-    form.post(route('register.send-code'), {
+const sendCode = async () => {
+    sendingCode.value = true
+
+    let recaptchaToken: string | null = null
+    try {
+        recaptchaToken = await executeRecaptcha('send_code')
+    } catch {
+        // Отправляем без токена — бэкенд вернёт ошибку валидации
+    }
+
+    form.transform((data) => ({
+        ...data,
+        ...(recaptchaToken ? { recaptcha_token: recaptchaToken } : {}),
+    })).post(route('register.send-code'), {
         preserveScroll: true,
         onSuccess: () => {
             codeSent.value = true
             startCountdown()
+        },
+        onFinish: () => {
+            sendingCode.value = false
         },
     })
 }
@@ -86,7 +104,7 @@ const submit = () => {
 }
 
 const canSendCode = computed(() => {
-    return form.identifier.length > 0 && !form.processing && countdown.value === 0
+    return form.identifier.length > 0 && !form.processing && !sendingCode.value && countdown.value === 0
 })
 
 const canSubmit = computed(() => {
@@ -199,6 +217,10 @@ onUnmounted(() => {
                             {{ form.errors.identifier }}
                         </p>
                     </div>
+
+                    <p v-if="form.errors.recaptcha_token" class="auth-error">
+                        {{ form.errors.recaptcha_token }}
+                    </p>
 
                     <div class="auth-field auth-code-row">
                         <button

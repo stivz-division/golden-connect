@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Domain\User\Enums\ContactType;
+use App\Rules\RecaptchaRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -34,10 +35,16 @@ class SendCodeRequest extends FormRequest
             $identifierRules[] = Rule::unique('users', 'phone');
         }
 
-        return [
+        $rules = [
             'type' => ['required', Rule::enum(ContactType::class)],
             'identifier' => $identifierRules,
         ];
+
+        if (! $this->session()->get('telegram_linked') && config('services.recaptcha.site_key')) {
+            $rules['recaptcha_token'] = ['required', new RecaptchaRule('send_code')];
+        }
+
+        return $rules;
     }
 
     public function messages(): array

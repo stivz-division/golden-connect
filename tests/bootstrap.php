@@ -19,4 +19,11 @@ if (getenv('DB_HOST') === 'db') {
     }
 }
 
+// Отключаем reCAPTCHA в тестах
+foreach (['RECAPTCHA_SITE_KEY', 'RECAPTCHA_SECRET_KEY'] as $key) {
+    putenv("{$key}=");
+    $_ENV[$key] = '';
+    $_SERVER[$key] = '';
+}
+
 require __DIR__.'/../vendor/autoload.php';

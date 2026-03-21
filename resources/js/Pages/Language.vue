@@ -1,48 +1,50 @@
-<script setup>
-import { ref } from 'vue';
-import { Head, router } from '@inertiajs/vue3';
-import { Globe, Check } from 'lucide-vue-next';
-import { useTranslations } from '@/Composables/useTranslations.js';
-import AuthLayout from '@/Layouts/AuthLayout.vue';
-import logoNav from '@/../images/logo-nav.png';
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Head, router } from '@inertiajs/vue3'
+import { Globe, Check } from 'lucide-vue-next'
+import { useTranslations } from '@/Composables/useTranslations.js'
+import AuthLayout from '@/Layouts/AuthLayout.vue'
+import logoNav from '@/../images/logo-nav.png'
 
-const props = defineProps({
-    locales: {
-        type: Array,
-        required: true,
-    },
-    currentLocale: {
-        type: String,
-        required: true,
-    },
-});
+interface Locale {
+    code: string
+    name: string
+    name_en: string
+    flag: string
+    short: string
+}
 
-const { t } = useTranslations();
-const selected = ref(props.currentLocale);
-const processing = ref(false);
-const switching = ref(false);
+const props = defineProps<{
+    locales: Locale[]
+    currentLocale: string
+}>()
 
-function selectLocale(code) {
-    if (code === selected.value || switching.value) return;
+const { t } = useTranslations()
+const selected = ref(props.currentLocale)
+const processing = ref(false)
+const switching = ref(false)
 
-    selected.value = code;
-    switching.value = true;
+function selectLocale(code: string) {
+    if (code === selected.value || switching.value) return
+
+    selected.value = code
+    switching.value = true
 
     router.patch(route('locale.update'), { locale: code }, {
         preserveScroll: true,
         onFinish: () => {
-            switching.value = false;
+            switching.value = false
         },
-    });
+    })
 }
 
 function submit() {
-    processing.value = true;
+    processing.value = true
     router.post(route('locale.store'), { locale: selected.value }, {
         onFinish: () => {
-            processing.value = false;
+            processing.value = false
         },
-    });
+    })
 }
 </script>
 

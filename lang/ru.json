@@ -87,5 +87,7 @@
     "telegram.linked_info": "После регистрации ваш Telegram будет автоматически привязан к аккаунту",
     "telegram.invalid_data": "Невалидные данные Telegram",
     "telegram.open_in_telegram": "Откройте эту страницу из Telegram",
-    "validation.phone_invalid_format": "Неверный формат номера телефона. Укажите номер в международном формате, например: +79991234567"
+    "validation.phone_invalid_format": "Неверный формат номера телефона. Укажите номер в международном формате, например: +79991234567",
+    "validation.recaptcha_failed": "Проверка безопасности не пройдена. Попробуйте ещё раз.",
+    "validation.recaptcha_unavailable": "Сервис проверки безопасности недоступен. Попробуйте позже."
 }

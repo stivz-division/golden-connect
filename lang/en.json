@@ -87,5 +87,7 @@
     "telegram.linked_info": "After registration your Telegram will be automatically linked to your account",
     "telegram.invalid_data": "Invalid Telegram data",
     "telegram.open_in_telegram": "Please open this page from Telegram",
-    "validation.phone_invalid_format": "Invalid phone number format. Please use international format, e.g.: +79991234567"
+    "validation.phone_invalid_format": "Invalid phone number format. Please use international format, e.g.: +79991234567",
+    "validation.recaptcha_failed": "Security check failed. Please try again.",
+    "validation.recaptcha_unavailable": "Security verification service is unavailable. Please try again later."
 }

@@ -40,4 +40,10 @@ return [
         'base_url' => env('TELEGRAM_GATEWAY_BASE_URL', 'https://gatewayapi.telegram.org'),
     ],
 
+    'recaptcha' => [
+        'site_key' => env('RECAPTCHA_SITE_KEY'),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+        'threshold' => (float) env('RECAPTCHA_THRESHOLD', 0.5),
+    ],
+
 ];
