@@ -247,7 +247,7 @@
 }
 
 @media (max-width: 640px) {
-  .auth-input { font-size: 0.8125rem; padding: 0.625rem 0.875rem; }
+  .auth-input { font-size: 1rem; padding: 0.625rem 0.875rem; }
   .auth-input.has-icon { padding-left: 2.5rem; }
   .auth-input.has-toggle { padding-right: 2.5rem; }
   .auth-input-icon { left: 0.75rem; }
