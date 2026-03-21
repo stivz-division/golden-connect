@@ -5,6 +5,19 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { ZiggyVue } from 'ziggy-js';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { retrieveRawInitData } from '@telegram-apps/bridge';
+import { useTelegramApp } from '@/Composables/useTelegramApp';
+
+// Инициализируем Telegram SDK если приложение запущено внутри Telegram
+try {
+    const rawInitData = retrieveRawInitData();
+    if (rawInitData) {
+        const { initialize } = useTelegramApp();
+        initialize();
+    }
+} catch {
+    // Не в Telegram — игнорируем
+}
 
 const appName = import.meta.env.VITE_APP_NAME || 'Golden Connect';
 

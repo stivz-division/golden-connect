@@ -37,6 +37,10 @@
   justify-content: center;
   background: linear-gradient(135deg, var(--color-dark-gradient-from) 0%, var(--color-dark-gradient-to) 100%);
   padding: 1rem;
+  padding-top: calc(1rem + var(--tg-viewport-content-safe-area-inset-top, 0px) + var(--tg-viewport-safe-area-inset-top, 0px));
+  padding-bottom: calc(1rem + var(--tg-viewport-safe-area-inset-bottom, 0px));
+  padding-left: calc(1rem + var(--tg-viewport-safe-area-inset-left, 0px));
+  padding-right: calc(1rem + var(--tg-viewport-safe-area-inset-right, 0px));
   position: relative;
   overflow: hidden;
 }
@@ -620,8 +624,8 @@
 
 .auth-lang-switcher {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: calc(1rem + var(--tg-viewport-content-safe-area-inset-top, 0px) + var(--tg-viewport-safe-area-inset-top, 0px));
+  right: calc(1rem + var(--tg-viewport-safe-area-inset-right, 0px));
   z-index: 10;
 }
 

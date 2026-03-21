@@ -9,3 +9,11 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Telegram Mini App: Safe Area Insets для fullscreen режима */
+.tg-safe-area {
+    padding-top: calc(var(--tg-viewport-content-safe-area-inset-top, 0px) + var(--tg-viewport-safe-area-inset-top, 0px));
+    padding-bottom: var(--tg-viewport-safe-area-inset-bottom, 0px);
+    padding-left: var(--tg-viewport-safe-area-inset-left, 0px);
+    padding-right: var(--tg-viewport-safe-area-inset-right, 0px);
+}

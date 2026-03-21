@@ -2,6 +2,7 @@
 import {Head, router} from '@inertiajs/vue3'
 import {useTranslations} from '@/Composables/useTranslations.js'
 import {useTelegram} from '@/Composables/useTelegram'
+import {useTelegramApp} from '@/Composables/useTelegramApp'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import {AlertTriangle, Loader2, RefreshCw} from 'lucide-vue-next'
 import {onMounted, ref} from 'vue'
@@ -9,6 +10,7 @@ import logoNav from '@/../images/logo-nav.png'
 
 const { t } = useTranslations()
 const { getRawInitData, buildAuthUrl } = useTelegram()
+const { setupFullscreen } = useTelegramApp()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -37,7 +39,8 @@ function authenticate() {
     })
 }
 
-onMounted(() => {
+onMounted(async () => {
+    await setupFullscreen()
     authenticate()
 })
 </script>
