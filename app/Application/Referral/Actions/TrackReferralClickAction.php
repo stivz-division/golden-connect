@@ -19,7 +19,7 @@ class TrackReferralClickAction
         ReferralStat::query()->upsert(
             ['user_id' => $mentorId, $column => 1],
             ['user_id'],
-            [$column => DB::raw("`{$column}` + 1")],
+            [$column => DB::raw("$column + 1")],
         );
 
         Log::debug('Referral click tracked', [
