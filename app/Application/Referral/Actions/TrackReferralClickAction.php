@@ -4,6 +4,7 @@ namespace App\Application\Referral\Actions;
 
 use App\Domain\Referral\Enums\ReferralSource;
 use App\Domain\Referral\Models\ReferralStat;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TrackReferralClickAction
@@ -15,8 +16,11 @@ class TrackReferralClickAction
             ReferralSource::Telegram => 'telegram_clicks',
         };
 
-        $stat = ReferralStat::firstOrCreate(['user_id' => $mentorId]);
-        $stat->increment($column);
+        ReferralStat::query()->upsert(
+            ['user_id' => $mentorId, $column => 1],
+            ['user_id'],
+            [$column => DB::raw("`{$column}` + 1")],
+        );
 
         Log::debug('Referral click tracked', [
             'mentor_id' => $mentorId,

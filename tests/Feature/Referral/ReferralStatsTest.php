@@ -8,8 +8,16 @@ use App\Domain\User\Models\User;
 use App\Domain\User\Models\VerificationCode;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
+
+function skipOnSqlite(): void
+{
+    if (DB::connection()->getDriverName() === 'sqlite') {
+        test()->markTestSkipped('Upsert с DB::raw использует MySQL-синтаксис');
+    }
+}
 
 // --- Модель ---
 
@@ -48,6 +56,8 @@ it('has user relationship', function () {
 // --- TrackReferralClickAction ---
 
 it('increments web_clicks for web source', function () {
+    skipOnSqlite();
+
     $user = User::factory()->create();
 
     $action = app(TrackReferralClickAction::class);
@@ -60,6 +70,8 @@ it('increments web_clicks for web source', function () {
 });
 
 it('increments telegram_clicks for telegram source', function () {
+    skipOnSqlite();
+
     $user = User::factory()->create();
 
     $action = app(TrackReferralClickAction::class);
@@ -72,6 +84,8 @@ it('increments telegram_clicks for telegram source', function () {
 });
 
 it('increments clicks multiple times', function () {
+    skipOnSqlite();
+
     $user = User::factory()->create();
 
     $action = app(TrackReferralClickAction::class);
@@ -88,6 +102,8 @@ it('increments clicks multiple times', function () {
 // --- TrackReferralRegistrationAction ---
 
 it('increments web_registrations for web source', function () {
+    skipOnSqlite();
+
     $user = User::factory()->create();
 
     $action = app(TrackReferralRegistrationAction::class);
@@ -100,6 +116,8 @@ it('increments web_registrations for web source', function () {
 });
 
 it('increments telegram_registrations for telegram source', function () {
+    skipOnSqlite();
+
     $user = User::factory()->create();
 
     $action = app(TrackReferralRegistrationAction::class);
@@ -151,6 +169,8 @@ it('returns zero stats when no referral_stat record exists', function () {
 // --- Feature: переход по реферальной ссылке инкрементирует web_clicks ---
 
 it('tracks web click when visiting register with ref param', function () {
+    skipOnSqlite();
+
     $mentor = User::factory()->create();
     $mentor->saveAsRoot();
 
@@ -165,6 +185,8 @@ it('tracks web click when visiting register with ref param', function () {
 });
 
 it('does not double-count clicks on page refresh', function () {
+    skipOnSqlite();
+
     $mentor = User::factory()->create();
     $mentor->saveAsRoot();
 
@@ -183,6 +205,8 @@ it('does not double-count clicks on page refresh', function () {
 });
 
 it('tracks registration via referral link', function () {
+    skipOnSqlite();
+
     $mentor = User::factory()->create();
     $mentor->saveAsRoot();
 
