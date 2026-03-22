@@ -2,8 +2,10 @@
 
 namespace App\Application\User\Actions;
 
+use App\Application\Referral\Actions\TrackReferralRegistrationAction;
 use App\Application\User\DTOs\RegisterWithCodeData;
 use App\Application\User\DTOs\VerifyCodeData;
+use App\Domain\Referral\Enums\ReferralSource;
 use App\Domain\User\Enums\ContactType;
 use App\Domain\User\Exceptions\MentorNotFoundException;
 use App\Domain\User\Models\User;
@@ -16,6 +18,7 @@ class RegisterWithCodeAction
     public function __construct(
         private readonly VerifyCodeAction $verifyCode,
         private readonly LinkTelegramAction $linkTelegram,
+        private readonly TrackReferralRegistrationAction $trackReferralRegistration,
     ) {}
 
     public function execute(RegisterWithCodeData $data): User
@@ -57,6 +60,14 @@ class RegisterWithCodeAction
         });
 
         $this->linkTelegram->execute($user);
+
+        if ($mentor) {
+            $source = session('telegram_linked', false)
+                ? ReferralSource::Telegram
+                : ReferralSource::Web;
+
+            $this->trackReferralRegistration->execute($mentor->id, $source);
+        }
 
         Auth::login($user, remember: true);
 

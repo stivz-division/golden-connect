@@ -11,10 +11,8 @@ class DashboardController extends Controller
 {
     public function index(Request $request): Response
     {
-        $user = $request->user();
-
         return Inertia::render('Dashboard/Index', [
-            'referralCount' => $user->getDescendantCount(),
+            'referralCount' => 0, // TODO: implement
         ]);
     }
 }

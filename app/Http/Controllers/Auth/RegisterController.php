@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Application\Referral\Actions\TrackReferralClickAction;
 use App\Application\User\Actions\RegisterWithCodeAction;
 use App\Application\User\Actions\SendCodeAction;
 use App\Application\User\DTOs\RegisterWithCodeData;
 use App\Application\User\DTOs\SendCodeData;
+use App\Domain\Referral\Enums\ReferralSource;
 use App\Domain\TelegramGateway\Exceptions\PhoneNumberNotAvailableException;
 use App\Domain\User\Enums\ContactType;
 use App\Domain\User\Exceptions\MentorNotFoundException;
@@ -27,12 +29,26 @@ class RegisterController extends Controller
     public function __construct(
         private readonly SendCodeAction $sendCode,
         private readonly RegisterWithCodeAction $registerWithCode,
+        private readonly TrackReferralClickAction $trackReferralClick,
     ) {}
 
     public function showRegistrationForm(Request $request): Response
     {
         $ref = $request->query('ref');
         $mentorUuid = $ref ?: User::query()->orderBy('id')->value('uuid');
+
+        if ($ref && ! session()->has("referral_click_tracked_{$ref}")) {
+            $mentor = User::where('uuid', $ref)->first();
+
+            if ($mentor) {
+                $source = session('telegram_linked', false)
+                    ? ReferralSource::Telegram
+                    : ReferralSource::Web;
+
+                $this->trackReferralClick->execute($mentor->id, $source);
+                session()->put("referral_click_tracked_{$ref}", true);
+            }
+        }
 
         return Inertia::render('Auth/Register', [
             'ref' => $ref,

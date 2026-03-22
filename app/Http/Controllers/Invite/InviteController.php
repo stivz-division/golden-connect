@@ -12,6 +12,7 @@ class InviteController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user();
+        $referralStat = $user->referralStat;
 
         $referralLink = config('app.url').'/register?ref='.$user->uuid;
         $telegramLink = config('telegram-webapp.mini_apps_url')
@@ -23,9 +24,9 @@ class InviteController extends Controller
             'telegramLink' => $telegramLink,
             'referralCode' => $user->uuid,
             'stats' => [
-                'totalClicks' => 0,
-                'registrations' => 0,
-                'activeReferrals' => $user->getDescendantCount(),
+                'totalClicks' => $referralStat?->total_clicks ?? 0,
+                'registrations' => $referralStat?->total_registrations ?? 0,
+                'activeReferrals' => 0, // TODO: implement
                 'totalEarned' => 0,
             ],
         ]);

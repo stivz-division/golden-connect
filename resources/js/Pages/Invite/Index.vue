@@ -1,21 +1,26 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import {
-    ArrowLeft,
-    Gift,
-    ExternalLink,
-    UserPlus,
-    Users,
-    TrendingUp,
-    Copy,
-    Check,
-    QrCode,
-    Send,
-    Info,
-    ChevronRight,
+  ArrowDown,
+  ArrowLeft,
+  Check,
+  ChevronRight,
+  CircleDollarSign,
+  Copy,
+  ExternalLink,
+  Gift,
+  Info,
+  QrCode,
+  Send,
+  Share2,
+  Split,
+  TrendingUp,
+  UserPlus,
+  Users,
+  Wallet,
 } from 'lucide-vue-next';
 
 const { t } = useTranslations();
@@ -69,18 +74,12 @@ const statItems = computed(() => [
     { label: t('invite.earned'), value: `$${stats.value.totalEarned}`, icon: TrendingUp, color: '#F5C542' },
 ]);
 
-const steps = [
-    { num: 1, title: t('invite.step1Title'), desc: t('invite.step1Desc'), icon: UserPlus, color: '#22C55E' },
-    { num: 2, title: t('invite.step2Title'), desc: t('invite.step2Desc'), icon: TrendingUp, color: '#60A5FA' },
-    { num: 3, title: t('invite.step3Title'), desc: t('invite.step3Desc'), icon: Gift, color: '#F5C542' },
-];
-
 const levels = [
-    { level: 1, desc: t('invite.level1Desc') },
-    { level: 2, desc: t('invite.level2Desc') },
-    { level: 3, desc: t('invite.level3Desc') },
-    { level: 4, desc: t('invite.level4Desc') },
-    { level: 5, desc: t('invite.level5Desc') },
+    { level: 1, label: t('invite.level1Label'), desc: t('invite.level1Desc') },
+    { level: 2, label: t('invite.level2Label'), desc: t('invite.level2Desc') },
+    { level: 3, label: t('invite.level3Label'), desc: t('invite.level3Desc') },
+    { level: 4, label: t('invite.level4Label'), desc: t('invite.level4Desc') },
+    { level: 5, label: t('invite.level5Label'), desc: t('invite.level5Desc') },
 ];
 </script>
 
@@ -214,42 +213,97 @@ const levels = [
             <h2 class="invite-card-title">{{ t('invite.howItWorks') }}</h2>
             <p class="invite-how-works-desc">{{ t('invite.howItWorksDesc') }}</p>
 
-            <!-- Steps -->
-            <div class="invite-steps">
-                <div v-for="step in steps" :key="step.num" class="invite-step">
-                    <div
-                        class="invite-step-icon"
-                        :style="{ background: `${step.color}20`, color: step.color }"
-                    >
-                        <component :is="step.icon" :size="20" />
+            <!-- Visual Flow: Circle → Referral portion → 5-way split -->
+            <div class="invite-flow">
+                <div class="invite-flow-step">
+                    <div class="invite-flow-step__icon invite-flow-step__icon--blue">
+                        <CircleDollarSign :size="20" />
                     </div>
-                    <div class="invite-step-content">
-                        <p class="invite-step-title">{{ step.num }}. {{ step.title }}</p>
-                        <p class="invite-step-desc">{{ step.desc }}</p>
+                    <div class="invite-flow-step__content">
+                        <p class="invite-flow-step__title">{{ t('invite.flowCircleTitle') }}</p>
+                        <p class="invite-flow-step__desc">{{ t('invite.flowCircleDesc') }}</p>
+                    </div>
+                </div>
+
+                <div class="invite-flow-arrow">
+                    <ArrowDown :size="16" />
+                </div>
+
+                <div class="invite-flow-step">
+                    <div class="invite-flow-step__icon invite-flow-step__icon--purple">
+                        <Split :size="20" />
+                    </div>
+                    <div class="invite-flow-step__content">
+                        <p class="invite-flow-step__title">{{ t('invite.flowSplitTitle') }}</p>
+                        <p class="invite-flow-step__desc">{{ t('invite.flowSplitDesc') }}</p>
+                    </div>
+                </div>
+
+                <div class="invite-flow-arrow">
+                    <ArrowDown :size="16" />
+                </div>
+
+                <div class="invite-flow-step">
+                    <div class="invite-flow-step__icon invite-flow-step__icon--gold">
+                        <Wallet :size="20" />
+                    </div>
+                    <div class="invite-flow-step__content">
+                        <p class="invite-flow-step__title">{{ t('invite.flowEarnTitle') }}</p>
+                        <p class="invite-flow-step__desc">{{ t('invite.flowEarnDesc') }}</p>
                     </div>
                 </div>
             </div>
 
-            <!-- 5 Levels -->
-            <h3 class="invite-levels-title">{{ t('invite.level') }} 1–5</h3>
+            <!-- Example Calculation -->
+            <div class="invite-example">
+                <div class="invite-example__header">
+                    <Info :size="14" />
+                    <span>{{ t('invite.exampleTitle') }}</span>
+                </div>
+                <p class="invite-example__text" v-html="t('invite.exampleText')"></p>
+            </div>
+
+            <!-- 5 Levels — Equal Split Visual -->
+            <h3 class="invite-levels-title">
+                <Share2 :size="16" />
+                {{ t('invite.levelsTitle') }}
+            </h3>
+            <p class="invite-levels-subtitle">{{ t('invite.levelsSubtitle') }}</p>
+
+            <!-- Equal split bar -->
+            <div class="invite-split-bar">
+                <div
+                    v-for="item in levels"
+                    :key="item.level"
+                    class="invite-split-bar__segment"
+                >
+                    <span class="invite-split-bar__label">{{ item.level }}</span>
+                </div>
+            </div>
+            <p class="invite-split-bar__caption">{{ t('invite.splitCaption') }}</p>
+
+            <!-- Level Cards -->
             <div class="invite-levels-container">
                 <div v-for="item in levels" :key="item.level" class="invite-level-item">
                     <div class="invite-level-badge">{{ item.level }}</div>
                     <div class="invite-level-content">
-                        <p class="invite-level-title">{{ t('invite.level') }} {{ item.level }}</p>
+                        <p class="invite-level-title">{{ item.label }}</p>
                         <p class="invite-level-description">{{ item.desc }}</p>
                     </div>
+                    <div class="invite-level-share">20%</div>
                 </div>
             </div>
 
-            <!-- Notes -->
+            <!-- Where money goes -->
             <div class="invite-note">
                 <Info :size="16" class="invite-note-icon" />
                 <p class="invite-note-text">{{ t('invite.referralNote') }}</p>
             </div>
+
+            <!-- No active lot warning -->
             <div class="invite-note invite-note--subtle">
                 <Info :size="16" class="invite-note-icon" />
-                <p class="invite-note-text">{{ t('invite.separateProgram') }}</p>
+                <p class="invite-note-text">{{ t('invite.noLotNote') }}</p>
             </div>
         </div>
 
