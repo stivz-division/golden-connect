@@ -1,27 +1,3 @@
-/* Back Button */
-.invite-back-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-    transition: color 0.3s ease;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-@media (min-width: 640px) {
-    .invite-back-button {
-        margin-bottom: 1.5rem;
-    }
-}
-
-.invite-back-button:hover {
-    color: white;
-}
-
 /* Title Container */
 .invite-title-container {
     display: flex;

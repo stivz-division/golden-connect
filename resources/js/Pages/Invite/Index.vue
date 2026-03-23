@@ -5,7 +5,6 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { useTranslations } from '@/Composables/useTranslations';
 import {
   ArrowDown,
-  ArrowLeft,
   Check,
   ChevronRight,
   CircleDollarSign,
@@ -65,10 +64,6 @@ const handleCopyTg = () => {
     setTimeout(() => { copiedTg.value = false; }, 2000);
 };
 
-const goBack = () => {
-    window.history.back();
-};
-
 const downloadQR = async (url, filename) => {
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
     const response = await fetch(qrUrl);
@@ -100,12 +95,6 @@ const levels = [
     <Head :title="t('invite.title')" />
 
     <AppLayout>
-        <!-- Back Button -->
-        <button class="invite-back-button" @click="goBack">
-            <ArrowLeft :size="16" />
-            {{ t('common.back') }}
-        </button>
-
         <!-- Page Title -->
         <div class="invite-title-container">
             <div class="invite-title-icon">
