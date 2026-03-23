@@ -9,8 +9,11 @@ import { useTelegramApp } from '@/Composables/useTelegramApp';
 import { initTelegramBackButton } from '@/Composables/useTelegramBackButton';
 
 // Инициализируем Telegram SDK если приложение запущено внутри Telegram
-const { initialize } = useTelegramApp();
+const { initialize, setupFullscreen } = useTelegramApp();
 initialize();
+
+// Монтируем viewport и привязываем CSS-переменные safe area при каждом старте
+setupFullscreen();
 
 // Инициализируем Back Button для навигации в Telegram Mini App
 initTelegramBackButton();
