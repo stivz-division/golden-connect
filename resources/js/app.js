@@ -6,10 +6,14 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { ZiggyVue } from 'ziggy-js';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { useTelegramApp } from '@/Composables/useTelegramApp';
+import { initTelegramBackButton } from '@/Composables/useTelegramBackButton';
 
 // Инициализируем Telegram SDK если приложение запущено внутри Telegram
 const { initialize } = useTelegramApp();
 initialize();
+
+// Инициализируем Back Button для навигации в Telegram Mini App
+initTelegramBackButton();
 
 const appName = import.meta.env.VITE_APP_NAME || 'Golden Connect';
 

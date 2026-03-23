@@ -1,8 +1,5 @@
 <script setup>
 import AppHeader from '@/Components/AppHeader.vue';
-import { useTelegramBackButton } from '@/Composables/useTelegramBackButton';
-
-useTelegramBackButton();
 </script>
 
 <template>
