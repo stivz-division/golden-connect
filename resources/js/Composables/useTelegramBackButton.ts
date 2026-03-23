@@ -56,8 +56,6 @@ export function useTelegramBackButton(url: Ref<string> | (() => string)) {
         if (backButton.hide.isAvailable()) {
             backButton.hide()
         }
-        if (backButton.unmount.isAvailable()) {
-            backButton.unmount()
-        }
+        backButton.unmount()
     })
 }
