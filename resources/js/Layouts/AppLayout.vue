@@ -1,13 +1,8 @@
 <script setup>
-import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 import AppHeader from '@/Components/AppHeader.vue';
 import { useTelegramBackButton } from '@/Composables/useTelegramBackButton';
 
-const page = usePage();
-const url = computed(() => page.url);
-
-useTelegramBackButton(url);
+useTelegramBackButton();
 </script>
 
 <template>

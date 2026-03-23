@@ -1,4 +1,5 @@
-import { watch, onUnmounted, type Ref } from 'vue'
+import { onUnmounted } from 'vue'
+import { router } from '@inertiajs/vue3'
 import { backButton, miniApp } from '@telegram-apps/sdk'
 
 /**
@@ -6,7 +7,7 @@ import { backButton, miniApp } from '@telegram-apps/sdk'
  * - /dashboard → клик закрывает Mini App
  * - остальные страницы → клик возвращает назад (history.back)
  */
-export function useTelegramBackButton(url: Ref<string> | (() => string)) {
+export function useTelegramBackButton() {
     if (!backButton.mount.isAvailable()) return
 
     backButton.mount()
@@ -14,7 +15,6 @@ export function useTelegramBackButton(url: Ref<string> | (() => string)) {
     let currentHandler: VoidFunction | null = null
 
     function updateBackButton(currentUrl: string) {
-        // Убираем предыдущий обработчик
         if (currentHandler && backButton.offClick.isAvailable()) {
             backButton.offClick(currentHandler)
             currentHandler = null
@@ -24,14 +24,12 @@ export function useTelegramBackButton(url: Ref<string> | (() => string)) {
         const isDashboard = path === '/dashboard' || path === '/dashboard/'
 
         if (isDashboard) {
-            // На dashboard — кнопка закрывает приложение
             currentHandler = () => {
                 if (miniApp.close.isAvailable()) {
                     miniApp.close()
                 }
             }
         } else {
-            // На остальных страницах — назад
             currentHandler = () => {
                 window.history.back()
             }
@@ -46,9 +44,15 @@ export function useTelegramBackButton(url: Ref<string> | (() => string)) {
         }
     }
 
-    watch(url, (newUrl) => updateBackButton(newUrl), { immediate: true })
+    // Обновляем при каждой навигации Inertia
+    updateBackButton(window.location.pathname)
+
+    const removeListener = router.on('navigate', (event) => {
+        updateBackButton(event.detail.page.url)
+    })
 
     onUnmounted(() => {
+        removeListener()
         if (currentHandler && backButton.offClick.isAvailable()) {
             backButton.offClick(currentHandler)
             currentHandler = null
