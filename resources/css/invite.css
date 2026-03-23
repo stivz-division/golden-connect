@@ -355,6 +355,27 @@
     text-align: center;
 }
 
+.invite-qr-download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    margin-top: 0.625rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.invite-qr-download:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
 /* Code Label */
 .invite-code-label {
     font-size: 0.75rem;
@@ -603,6 +624,122 @@
     padding: 0.25rem 0.5rem;
     border-radius: 0.375rem;
     background: rgba(245, 197, 66, 0.1);
+}
+
+/* Technical Lot Deduction Section */
+.invite-deduction-section {
+    margin-bottom: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.invite-deduction-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.invite-deduction-title__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.invite-deduction-desc {
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.invite-deduction-info {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(245, 158, 11, 0.06);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    margin-bottom: 0.75rem;
+}
+
+.invite-deduction-info__header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #F59E0B;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.invite-deduction-info__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    counter-reset: deduction-step;
+}
+
+.invite-deduction-info__list li {
+    counter-increment: deduction-step;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+}
+
+.invite-deduction-info__list li::before {
+    content: counter(deduction-step);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    margin-top: 0.0625rem;
+}
+
+.invite-deduction-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.625rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.invite-deduction-note__icon {
+    flex-shrink: 0;
+    width: 0.875rem;
+    height: 0.875rem;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 0.125rem;
+}
+
+.invite-deduction-note__text {
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.5;
 }
 
 /* Notes */

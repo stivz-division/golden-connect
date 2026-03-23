@@ -10,9 +10,11 @@ import {
   ChevronRight,
   CircleDollarSign,
   Copy,
+  Download,
   ExternalLink,
   Gift,
   Info,
+  Percent,
   QrCode,
   Send,
   Share2,
@@ -65,6 +67,17 @@ const handleCopyTg = () => {
 
 const goBack = () => {
     window.history.back();
+};
+
+const downloadQR = async (url, filename) => {
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+    const response = await fetch(qrUrl);
+    const blob = await response.blob();
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
 };
 
 const statItems = computed(() => [
@@ -159,6 +172,10 @@ const levels = [
                         class="invite-qr-image"
                     />
                     <p class="invite-qr-text">{{ t('invite.scanQR') }}</p>
+                    <button class="invite-qr-download" @click="downloadQR(referralLink, 'referral-qr-web.png')">
+                        <Download :size="14" />
+                        <span>{{ t('invite.downloadQR') }}</span>
+                    </button>
                 </div>
             </div>
 
@@ -199,6 +216,10 @@ const levels = [
                         class="invite-qr-image"
                     />
                     <p class="invite-qr-text">{{ t('invite.scanQR') }}</p>
+                    <button class="invite-qr-download" @click="downloadQR(telegramLink, 'referral-qr-telegram.png')">
+                        <Download :size="14" />
+                        <span>{{ t('invite.downloadQR') }}</span>
+                    </button>
                 </div>
             </div>
 
@@ -291,6 +312,34 @@ const levels = [
                         <p class="invite-level-description">{{ item.desc }}</p>
                     </div>
                     <div class="invite-level-share">20%</div>
+                </div>
+            </div>
+
+            <!-- Technical Lot Deduction -->
+            <div class="invite-deduction-section">
+                <h3 class="invite-deduction-title">
+                    <div class="invite-deduction-title__icon">
+                        <Percent :size="16" />
+                    </div>
+                    {{ t('invite.deductionTitle') }}
+                </h3>
+                <p class="invite-deduction-desc">{{ t('invite.deductionDesc') }}</p>
+
+                <div class="invite-deduction-info">
+                    <div class="invite-deduction-info__header">
+                        <Info :size="14" />
+                        <span>{{ t('invite.deductionHowTitle') }}</span>
+                    </div>
+                    <ul class="invite-deduction-info__list">
+                        <li>{{ t('invite.deductionStep1') }}</li>
+                        <li>{{ t('invite.deductionStep2') }}</li>
+                        <li>{{ t('invite.deductionStep3') }}</li>
+                    </ul>
+                </div>
+
+                <div class="invite-deduction-note">
+                    <Info :size="14" class="invite-deduction-note__icon" />
+                    <p class="invite-deduction-note__text">{{ t('invite.deductionNote') }}</p>
                 </div>
             </div>
 
